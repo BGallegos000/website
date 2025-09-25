@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rostisería Sabores Caseros</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #dc3545;
+      --secondary-color: #ffc107;
+      --dark-color: #343a40;
+      --light-color: #f8f9fa;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .hero-section {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+      background-size: cover;
+      background-position: center;
+      height: 70vh;
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+    
+    .product-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      height: 100%;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .footer-section {
+      background-color: var(--dark-color);
+      color: white;
+    }
+    
+    .carousel-item img {
+      height: 400px;
+      object-fit: cover;
+    }
+    
+    .cart-icon {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .offcanvas-cart-item {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+    }
+    
+    .cart-item-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    
+    .category-filter {
+      margin-bottom: 20px;
+    }
+    
+    .category-btn {
+      margin: 5px;
+    }
+    
+    .search-box {
+      margin-bottom: 20px;
+    }
+    
+    .pagination-container {
+      margin-top: 30px;
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+    
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 15px;
+    }
+    
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .step.active .step-number {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .step-line {
+      flex-grow: 1;
+      height: 2px;
+      background-color: #dee2e6;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .carousel-item img {
+        height: 250px;
+      }
+      
+      .hero-section {
+        height: 50vh;
+      }
+      
+      .cart-text {
+        display: none;
+      }
+      
+      .step-indicator {
+        flex-wrap: wrap;
+      }
+      
+      .step {
+        margin: 10px;
+      }
+      
+      .step-line {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+      
+      .hero-section p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="bi bi-egg-fried me-2"></i>Rostisería Sabores Caseros
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#nosotros">Nosotros</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Catálogo</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#productos">Todos</a></li>
+              <li><a class="dropdown-item" href="#ofertas">Ofertas</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contacto">Contacto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar Sesión</a>
+          </li>
+          <li class="nav-item">
+            <!-- Icono del carrito con contador -->
+            <a class="nav-link cart-icon" href="#" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+              <i class="bi bi-cart3 fs-5"></i>
+              <span class="cart-count">0</span>
+              <span class="cart-text ms-1">Carrito</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container text-center">
+      <h1 class="display-4 fw-bold mb-4">Los Mejores Sabores Caseros</h1>
+      <p class="lead mb-4">Disfruta de nuestras especialidades preparadas con ingredientes frescos y recetas tradicionales</p>
+      <a href="#productos" class="btn btn-primary btn-lg mt-3">Ver Catálogo</a>
+      <a href="#ofertas" class="btn btn-outline-light btn-lg mt-3 ms-2">Ver Ofertas</a>
+    </div>
+  </section>
+
+  <!-- Sección Características -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">¿Por qué elegirnos?</h2>
+        <p class="lead">Calidad y sabor que nos distinguen</p>
+      </div>
+      <div class="row text-center">
+        <div class="col-md-4 mb-4">
+          <div class="feature-icon">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <h4>Más de 20 años de experiencia</h4>
+          <p>Recetas tradicionales transmitidas por generaciones</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-icon">
+            <i class="bi bi-star-fill"></i>
+          </div>
+          <h4>Ingredientes frescos</h4>
+          <p>Seleccionamos los mejores productos para nuestros platos</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-icon">
+            <i class="bi bi-truck"></i>
+          </div>
+          <h4>Delivery rápido</h4>
+          <p>Entregamos en tu domicilio en menos de 40 minutos</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Especialidades -->
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">Especialidades de la Casa</h2>
+        <p class="lead">Nuestros platos más populares, preparados con el sabor de siempre</p>
+      </div>
+      
+      <!-- Carousel -->
+      <div id="specialtiesCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#specialtiesCarousel" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#specialtiesCarousel" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#specialtiesCarousel" data-bs-slide-to="2"></button>
+        </div>
+        <div class="carousel-inner rounded">
+          <div class="carousel-item active">
+            <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Pollo rostizado especial" class="d-block w-100">
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+              <h5>Pollo Rostizado Especial</h5>
+              <p>Nuestro pollo rostizado con hierbas aromáticas y especias secretas</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="https://images.unsplash.com/photo-1604503468506-0f228bace9c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Pollo a la brasa" class="d-block w-100">
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+              <h5>Pollo a la Brasa</h5>
+              <p>Cocinado lentamente para obtener una textura crujiente por fuera y jugosa por dentro</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="https://images.unsplash.com/photo-1551782450-17144efb9c50?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Comida familiar" class="d-block w-100">
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+              <h5>Menú Familiar</h5>
+              <p>Perfecto para compartir en familia, incluye pollo, papas, ensalada y más</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Nosotros -->
+  <section id="nosotros" class="py-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="fw-bold mb-4">Sobre Nosotros</h2>
+          <p>En Rostisería Sabores Caseros llevamos más de 20 años ofreciendo los auténticos sabores de la cocina tradicional. Nuestro compromiso es utilizar ingredientes frescos y técnicas de preparación que respeten las recetas de antaño.</p>
+          <p>Todo comenzó como un pequeño emprendimiento familiar, y hoy seguimos manteniendo ese espíritu casero en cada uno de nuestros platos. Creemos que la buena comida une a las personas y crea momentos inolvidables.</p>
+          <a href="#contacto" class="btn btn-outline-primary mt-3">Contáctanos</a>
+        </div>
+        <div class="col-md-6">
+          <img src="https://images.unsplash.com/photo-1551782450-17144efb9c50?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Nuestro equipo" class="img-fluid rounded shadow">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Productos -->
+  <section id="productos" class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">Nuestro Catálogo</h2>
+        <p class="lead">Descubre nuestra variedad de platos preparados con amor</p>
+      </div>
+      
+      <!-- Filtros y búsqueda -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="search-box">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Buscar productos..." id="searchInput">
+              <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="category-filter text-md-end">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-primary category-btn active" data-category="todos">Todos</button>
+              <button type="button" class="btn btn-outline-primary category-btn" data-category="pollos">Pollos</button>
+              <button type="button" class="btn btn-outline-primary category-btn" data-category="carnes">Carnes</button>
+              <button type="button" class="btn btn-outline-primary category-btn" data-category="ensaladas">Ensaladas</button>
+              <button type="button" class="btn btn-outline-primary category-btn" data-category="postres">Postres</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Lista de productos -->
+      <div class="row g-4" id="productList">
+        <!-- Los productos se cargarán aquí dinámicamente -->
+      </div>
+      
+      <!-- Paginación -->
+      <div class="pagination-container">
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center" id="pagination">
+            <!-- La paginación se generará aquí dinámicamente -->
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Ofertas -->
+  <section id="ofertas" class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">Ofertas Especiales</h2>
+        <p class="lead">Aprovecha nuestras promociones por tiempo limitado</p>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card border-danger h-100">
+            <div class="card-header bg-danger text-white text-center">
+              <h4 class="mb-0">Oferta del Día</h4>
+            </div>
+            <div class="card-body text-center">
+              <h3 class="text-danger">2x1 en Medios Pollos</h3>
+              <p class="card-text">Todos los martes y jueves, lleva 2 medios pollos al precio de 1.</p>
+              <p class="text-muted">Válido solo para consumo en local.</p>
+              <button class="btn btn-danger">Ver Detalles</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card border-warning h-100">
+            <div class="card-header bg-warning text-dark text-center">
+              <h4 class="mb-0">Combo Familiar</h4>
+            </div>
+            <div class="card-body text-center">
+              <h3 class="text-warning">25% de Descuento</h3>
+              <p class="card-text">Al pedir nuestro menú familiar, obtén un 25% de descuento en tu próxima compra.</p>
+              <p class="text-muted">Válido por 30 días después de la compra.</p>
+              <button class="btn btn-warning">Ver Detalles</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Proceso de Compra -->
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">¿Cómo comprar?</h2>
+        <p class="lead">Solo sigue estos simples pasos</p>
+      </div>
+      
+      <div class="step-indicator">
+        <div class="step active">
+          <div class="step-number">1</div>
+          <div class="step-title">Elige tus productos</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">Agrega al carrito</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">Completa tus datos</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-title">Realiza el pago</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-title">Recibe tu pedido</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección Contacto -->
+  <section id="contacto" class="py-5 bg-dark text-white">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">Contáctanos</h2>
+        <p class="lead">Estamos aquí para servirte</p>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <h4>Información de Contacto</h4>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <i class="bi bi-geo-alt-fill me-2"></i> Dirección: Calle Principal #123, Ciudad
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-telephone-fill me-2"></i> Teléfono: +56 9 1234 5678
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-envelope-fill me-2"></i> Email: SaboresCaseros@gmail.com
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-clock-fill me-2"></i> Horario: Lunes a Domingo 10:00 - 22:00
+            </li>
+          </ul>
+          
+          <h4 class="mt-4">Síguenos en Redes Sociales</h4>
+          <div class="d-flex gap-3">
+            <a href="#" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="text-white fs-4"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="text-white fs-4"><i class="bi bi-whatsapp"></i></a>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <h4>Envíanos un Mensaje</h4>
+          <form id="contactForm">
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="mensaje" class="form-label">Mensaje</label>
+              <textarea class="form-control" id="mensaje" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-section py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="mb-0">&copy; 2023 Rostisería Sabores Caseros. Todos los derechos reservados.</p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <p class="mb-0">SaboresCaseros@gmail.com</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de Login -->
+  <div class="modal fade" id="loginModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Iniciar Sesión</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email:</label>
+              <input type="email" class="form-control" id="loginEmail" placeholder="Ingresa tu email" required>
+            </div>
+            <div class="mb-3">
+              <label for="loginPwd" class="form-label">Contraseña:</label>
+              <input type="password" class="form-control" id="loginPwd" placeholder="Ingresa tu contraseña" required>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="remember">
+              <label class="form-check-label" for="remember">Recordarme</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+          </form>
+          <div class="text-center mt-3">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">¿Olvidaste tu contraseña?</a>
+          </div>
+          <hr>
+          <div class="text-center">
+            <p>¿No tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Regístrate aquí</a></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Registro -->
+  <div class="modal fade" id="registerModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Crear Cuenta</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="registerForm">
+            <div class="mb-3">
+              <label for="registerName" class="form-label">Nombre completo:</label>
+              <input type="text" class="form-control" id="registerName" placeholder="Ingresa tu nombre completo" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerEmail" class="form-label">Email:</label>
+              <input type="email" class="form-control" id="registerEmail" placeholder="Ingresa tu email" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerPwd" class="form-label">Contraseña:</label>
+              <input type="password" class="form-control" id="registerPwd" placeholder="Mínimo 8 caracteres, 1 mayúscula y 1 número" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerPwdConfirm" class="form-label">Confirmar contraseña:</label>
+              <input type="password" class="form-control" id="registerPwdConfirm" placeholder="Repite tu contraseña" required>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="acceptTerms">
+              <label class="form-check-label" for="acceptTerms">Acepto los términos y condiciones</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Recuperación de Contraseña -->
+  <div class="modal fade" id="forgotPasswordModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Recuperar Contraseña</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotPasswordForm">
+            <div class="mb-3">
+              <label for="forgotEmail" class="form-label">Email:</label>
+              <input type="email" class="form-control" id="forgotEmail" placeholder="Ingresa tu email registrado" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Enviar enlace de recuperación</button>
+          </form>
+          <div class="text-center mt-3">
+            <p>Te enviaremos un enlace a tu email para restablecer tu contraseña.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offcanvas del Carrito -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Tu Carrito de Compras</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="cart-items">
+        <!-- Los elementos del carrito se agregarán aquí dinámicamente -->
+        <p class="text-muted text-center" id="empty-cart-message">Tu carrito está vacío</p>
+      </div>
+      <div class="mt-3 pt-3 border-top">
+        <div class="d-flex justify-content-between mb-2">
+          <span>Subtotal:</span>
+          <span id="cart-subtotal">$0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+          <span>Envío:</span>
+          <span id="cart-shipping">$0</span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold fs-5">
+          <span>Total:</span>
+          <span id="cart-total">$0</span>
+        </div>
+        <button class="btn btn-primary w-100 mt-3" id="checkout-btn" disabled>Finalizar Compra</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script para funcionalidad del carrito y productos -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Datos de ejemplo para productos
+      const products = [
+        { id: 1, name: "Pollo Rostizado Entero", price: 18900, category: "pollos", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Pollo entero rostizado con nuestra mezcla secreta de especias. Incluye papas fritas." },
+        { id: 2, name: "Medio Pollo Rostizado", price: 10500, category: "pollos", image: "https://images.unsplash.com/photo-1604503468506-0f228bace9c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Media porción de nuestro delicioso pollo rostizado. Ideal para una persona." },
+        { id: 3, name: "Menú Familiar", price: 35900, category: "pollos", image: "https://images.unsplash.com/photo-1551782450-17144efb9c50?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Incluye pollo entero, papas fritas, ensalada y 4 bebidas. Perfecto para 4 personas." },
+        { id: 4, name: "Costillar de Cerdo", price: 22500, category: "carnes", image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Costillar de cerdo horneado con salsa barbacoa. Acompañado de papas rústicas." },
+        { id: 5, name: "Lasaña de Carne", price: 12900, category: "carnes", image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Lasaña tradicional con capas de pasta, carne molida y salsa bechamel." },
+        { id: 6, name: "Ensalada César", price: 8900, category: "ensaladas", image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Lechuga romana, crutones, queso parmesano y aderezo césar casero." },
+        { id: 7, name: "Ensalada de Quinoa", price: 9500, category: "ensaladas", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Quinoa, vegetales frescos, aguacate y aderezo de limón. Opción vegana." },
+        { id: 8, name: "Tarta de Manzana", price: 6500, category: "postres", image: "https://images.unsplash.com/photo-1562007908-859b4ba9a1a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Tarta casera de manzana con canela. Porción individual." },
+        { id: 9, name: "Flan Casero", price: 4500, category: "postres", image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Flan de huevo tradicional con caramelo. Postre clásico de la casa." },
+        { id: 10, name: "Pechuga a la Plancha", price: 12500, category: "pollos", image: "https://images.unsplash.com/photo-1604503468506-0f228bace9c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Pechuga de pollo a la plancha con hierbas. Acompañada de vegetales al vapor." },
+        { id: 11, name: "Albóndigas en Salsa", price: 11500, category: "carnes", image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Albóndigas de carne en salsa de tomate casera. Acompañadas de puré de papas." },
+        { id: 12, name: "Ensalada Griega", price: 9800, category: "ensaladas", image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", description: "Tomate, pepino, cebolla morada, aceitunas y queso feta. Con aderezo de oliva y orégano." }
+      ];
+
+      // Variables para paginación y filtros
+      let currentPage = 1;
+      const itemsPerPage = 6;
+      let currentCategory = 'todos';
+      let currentSearch = '';
+
+      // Elementos del DOM
+      const productList = document.getElementById('productList');
+      const pagination = document.getElementById('pagination');
+      const categoryButtons = document.querySelectorAll('.category-btn');
+      const searchInput = document.getElementById('searchInput');
+      const searchButton = document.getElementById('searchButton');
+
+      // Funcionalidad del carrito
+      let cart = [];
+      const cartCount = document.querySelector('.cart-count');
+      const cartItems = document.getElementById('cart-items');
+      const emptyCartMessage = document.getElementById('empty-cart-message');
+      const cartSubtotal = document.getElementById('cart-subtotal');
+      const cartShipping = document.getElementById('cart-shipping');
+      const cartTotal = document.getElementById('cart-total');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      // Inicializar la página
+      displayProducts();
+      setupEventListeners();
+
+      function displayProducts() {
+        // Filtrar productos según categoría y búsqueda
+        const filteredProducts = products.filter(product => {
+          const matchesCategory = currentCategory === 'todos' || product.category === currentCategory;
+          const matchesSearch = product.name.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                               product.description.toLowerCase().includes(currentSearch.toLowerCase());
+          return matchesCategory && matchesSearch;
+        });
+
+        // Calcular paginación
+        const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const paginatedProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+
+        // Mostrar productos
+        productList.innerHTML = '';
+        
+        if (paginatedProducts.length === 0) {
+          productList.innerHTML = '<div class="col-12 text-center"><p class="lead">No se encontraron productos</p></div>';
+        } else {
+          paginatedProducts.forEach(product => {
+            const productElement = document.createElement('div');
+            productElement.className = 'col-md-6 col-lg-4';
+            productElement.innerHTML = `
+              <div class="card product-card h-100 shadow-sm">
+                <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">${product.name}</h5>
+                  <p class="card-text flex-grow-1">${product.description}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="h5 text-primary mb-0">$${product.price.toLocaleString()}</span>
+                    <button class="btn btn-primary add-to-cart" data-id="${product.id}">Agregar al Carrito</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            productList.appendChild(productElement);
+          });
+        }
+
+        // Mostrar paginación
+        displayPagination(totalPages);
+      }
+
+      function displayPagination(totalPages) {
+        pagination.innerHTML = '';
+        
+        if (totalPages <= 1) return;
+        
+        // Botón anterior
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">Anterior</a>`;
+        pagination.appendChild(prevLi);
+        
+        // Números de página
+        for (let i = 1; i <= totalPages; i++) {
+          const pageLi = document.createElement('li');
+          pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+          pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+          pagination.appendChild(pageLi);
+        }
+        
+        // Botón siguiente
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">Siguiente</a>`;
+        pagination.appendChild(nextLi);
+      }
+
+      function setupEventListeners() {
+        // Filtros por categoría
+        categoryButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.getAttribute('data-category');
+            currentPage = 1;
+            displayProducts();
+          });
+        });
+
+        // Búsqueda
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', function(event) {
+          if (event.key === 'Enter') {
+            performSearch();
+          }
+        });
+
+        // Paginación
+        pagination.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (e.target.tagName === 'A') {
+            currentPage = parseInt(e.target.getAttribute('data-page'));
+            displayProducts();
+            window.scrollTo({ top: productList.offsetTop - 100, behavior: 'smooth' });
+          }
+        });
+
+        // Agregar productos al carrito
+        productList.addEventListener('click', function(e) {
+          if (e.target.classList.contains('add-to-cart')) {
+            const productId = parseInt(e.target.getAttribute('data-id'));
+            const product = products.find(p => p.id === productId);
+            addToCart(product);
+          }
+        });
+
+        // Formularios
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Inicio de sesión exitoso (simulado)');
+          $('#loginModal').modal('hide');
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Registro exitoso (simulado)');
+          $('#registerModal').modal('hide');
+        });
+
+        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Enlace de recuperación enviado (simulado)');
+          $('#forgotPasswordModal').modal('hide');
+        });
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Mensaje enviado (simulado)');
+          this.reset();
+        });
+
+        // Checkout
+        checkoutBtn.addEventListener('click', function() {
+          if (cart.length > 0) {
+            alert('¡Gracias por tu compra! Serás redirigido al proceso de pago.');
+            cart = [];
+            updateCart();
+            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('cartOffcanvas'));
+            offcanvas.hide();
+          }
+        });
+      }
+
+      function performSearch() {
+        currentSearch = searchInput.value;
+        currentPage = 1;
+        displayProducts();
+      }
+
+      function addToCart(product) {
+        const existingItem = cart.find(item => item.id === product.id);
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+          });
+        }
+        
+        updateCart();
+        
+        // Mostrar notificación
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">
+              ${product.name} agregado al carrito
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        `;
+        document.body.appendChild(toast);
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Eliminar el toast después de que se oculta
+        toast.addEventListener('hidden.bs.toast', function() {
+          document.body.removeChild(toast);
+        });
+      }
+
+      function updateCart() {
+        // Actualizar contador
+        cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+        
+        // Actualizar lista de productos
+        cartItems.innerHTML = '';
+        
+        if (cart.length === 0) {
+          emptyCartMessage.style.display = 'block';
+          checkoutBtn.disabled = true;
+        } else {
+          emptyCartMessage.style.display = 'none';
+          checkoutBtn.disabled = false;
+          
+          cart.forEach((item, index) => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'offcanvas-cart-item';
+            itemElement.innerHTML = `
+              <div class="d-flex align-items-center">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-image me-3">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">${item.name}</h6>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <button class="btn btn-sm btn-outline-secondary decrease-quantity" data-index="${index}">-</button>
+                      <span class="mx-2">${item.quantity}</span>
+                      <button class="btn btn-sm btn-outline-secondary increase-quantity" data-index="${index}">+</button>
+                    </div>
+                    <span>$${(item.price * item.quantity).toLocaleString()}</span>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-index="${index}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            `;
+            cartItems.appendChild(itemElement);
+          });
+        }
+        
+        // Actualizar totales
+        const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const shipping = subtotal > 0 ? 2000 : 0; // Ejemplo: $2000 de envío si hay productos
+        
+        cartSubtotal.textContent = `$${subtotal.toLocaleString()}`;
+        cartShipping.textContent = `$${shipping.toLocaleString()}`;
+        cartTotal.textContent = `$${(subtotal + shipping).toLocaleString()}`;
+        
+        // Delegación de eventos para los botones del carrito
+        cartItems.addEventListener('click', function(e) {
+          if (e.target.classList.contains('increase-quantity')) {
+            const index = e.target.getAttribute('data-index');
+            cart[index].quantity += 1;
+            updateCart();
+          } else if (e.target.classList.contains('decrease-quantity')) {
+            const index = e.target.getAttribute('data-index');
+            if (cart[index].quantity > 1) {
+              cart[index].quantity -= 1;
+            } else {
+              cart.splice(index, 1);
+            }
+            updateCart();
+          } else if (e.target.classList.contains('remove-item') || e.target.parentElement.classList.contains('remove-item')) {
+            const index = e.target.classList.contains('remove-item') ? 
+              e.target.getAttribute('data-index') : 
+              e.target.parentElement.getAttribute('data-index');
+            cart.splice(index, 1);
+            updateCart();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
