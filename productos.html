@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <script>
+            let x, y, z;
+            x=5;
+            y=8;
+            z= x % y;
+            z += 2; // z = z + 2
+            z*= 3;  // z = z * 3
+            z++;    // z = z + 1   
+            z--;    // z = z - 1
+            z = z + 1; // z += 1
+            if (z > 0 && y === 2){ // && es el operador lógico AND el === indica que deben ser iguales en tipo de dato y valor, el == solo compara el valor
+                alert(z);
+            }
+            alert(typeof(z));
+            class Persona {
+                constructor(nombre, edad){
+                    this.nombre = nombre;
+                    this.edad = edad;
+                }
+            }
+            const p = new Persona();
+            if (p instanceof Persona){
+                alert("Es una instancia de Persona");
+            } else {
+                alert("No es una instancia de Persona");
+            }
+            if(z<10){
+                console.log("Z es unitario");
+            } else if(z<20){
+                console.log("Z es decimal");
+            } else {
+                console.log("Otro caso");
+            }
+          // instanceof es un operador que verifica si un objeto es una instancia de una clase o constructor específico}
+            if (Math.random() < 0.5){
+                text="Cara";
+
+            }else {
+                text="Cruz";
+            }
+            alert(text);
+     // false porque z es un número primitivo, no un objeto
+            for (let i=0; i<3;i++){
+                console.log(i);
+            
+            }
+            let j = 0;
+            while (j < 3) {
+                console.loj(j);
+                j++;
+            }
+            let k=0;
+            do {
+                console.log(k);
+                k++;
+            } while (k < 3);
+            const cadenas = ["BMW","Volvo", "Ford"];
+            let l =0;
+            let tiposAutos="";
+            for(;cadenas[l];){
+                tiposAutos += cadenas[l] + " ";
+                l++;
+            }
+            console.log(tiposAutos);
+            let m = 0;
+            let marcas = "";
+            while (cadenas[m]){
+                marcas += cadenas[m] + " ";
+                m++;
+            }
+            console.log(marcas);
+            
+            let cadena = "Hola";
+            cadena = cadena + " Mundo";
+            let w = x + y + z;
+            function saludar(){
+                alert(cadena + " " + w);
+            }
+            console.log(saludar)
+        </script>
+    </head>
+    <body>
+        <p id="msg"></p>
+        <select name="comuna" id="com"></select>
+        <script>
+            console.log("Inicio Primer Codigo JavaScript");
+            document.getElementById("msg").innerText= "Hola Mundo";
+            document.getElementById("com").innerHTML= '<option value="1">Santiago</option><option value="2">Puente Alto</option><option value="3">La Florida</option>';
+
+        </script>
+        <script>
+            document.write(3+4);
+        </script>
+        <button type="button" onclick="alert(4+7)">Escribe</button>
+        <button type="button" onclick="alert('Hola Mundo')">Alerta</button>
+        <button type="button" onclick="saludar('Hola')">Saludar</button>
+        
+
+    </body>
+</html>S
