@@ -21,7 +21,7 @@
           <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
           <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
           <li class="nav-item"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
-          <li class="nav-item"><a class="nav-link" href="carrito.html">Carrito <span class="badge bg-danger" id="mini-cart-count">0</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="carrito.html"><i class="bi bi-cart3"></i> Carrito <span class="badge bg-danger" id="mini-cart-count">0</span></a></li>
         </ul>
       </div>
     </div>
@@ -31,71 +31,57 @@
   <section class="py-5">
     <div class="container">
       <h2 class="fw-bold mb-4 text-center">Nuestro Catálogo</h2>
-      <div id="productList" class="row g-4">
-        <!-- productos dinámicos -->
-      </div>
+      <div id="productList" class="row g-4"></div>
     </div>
   </section>
 
-  <!-- Ofertas -->
-  <section class="py-5 bg-light">
-    <div class="container">
-      <h2 class="fw-bold mb-4 text-center">Ofertas Especiales</h2>
-      <div class="row g-4">
-        <div class="col-md-6">
-          <div class="card border-danger h-100">
-            <div class="card-header bg-danger text-white text-center">Oferta del Día</div>
-            <div class="card-body text-center">
-              <h3 class="text-danger">2x1 en Medios Pollos</h3>
-              <p>Todos los martes y jueves.</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card border-warning h-100">
-            <div class="card-header bg-warning text-dark text-center">Combo Familiar</div>
-            <div class="card-body text-center">
-              <h3 class="text-warning">25% de Descuento</h3>
-              <p>En menú familiar por tiempo limitado.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white text-center py-3">
-    <p class="mb-0">&copy; <span id="anio"></span> Rostisería SC</p>
-  </footer>
+  <!-- Toast container -->
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('anio').textContent = new Date().getFullYear();
-      const cart = JSON.parse(localStorage.getItem('rostiseria_cart') || '[]');
-      document.getElementById('mini-cart-count').textContent = cart.reduce((s, it) => s + (it.quantity||1), 0);
+  document.addEventListener('DOMContentLoaded',()=>{
+    function showToast(msg,color='success'){ 
+      const c=document.getElementById('toast-container'); 
+      const t=document.createElement('div');
+      t.className=`toast align-items-center text-white bg-${color} border-0 mb-2`; 
+      t.innerHTML=`<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+      c.appendChild(t); new bootstrap.Toast(t).show(); t.addEventListener('hidden.bs.toast',()=>t.remove());
+    }
+    let cart=JSON.parse(localStorage.getItem('rostiseria_cart')||'[]');
+    function saveCart(){localStorage.setItem('rostiseria_cart',JSON.stringify(cart));}
+    function updateMiniCart(){document.getElementById('mini-cart-count').textContent=cart.reduce((s,i)=>s+(i.quantity||1),0);}
+    updateMiniCart();
 
-      // ejemplo productos
-      const products = [
-        { id:1, name:"Pollo Rostizado Entero", price:18900, img:"imagenes/pollo-asado.jpg" },
-        { id:2, name:"Costillar de Cerdo", price:22500, img:"imagenes/platos-fuertes.jpg" },
-        { id:3, name:"Tarta de Manzana", price:6500, img:"imagenes/postres.jpg" }
-      ];
-      const list=document.getElementById('productList');
-      products.forEach(p=>{
-        list.innerHTML += `
-          <div class="col-md-4">
-            <div class="card h-100">
-              <img src="${p.img}" class="card-img-top" style="height:200px; object-fit:cover;">
-              <div class="card-body text-center">
-                <h5>${p.name}</h5>
-                <p class="text-primary fw-bold">$${p.price.toLocaleString()}</p>
-                <button class="btn btn-danger add-to-cart" data-id="${p.id}">Agregar</button>
-              </div>
+    const products=[
+      {id:1,name:"Pollo Rostizado Entero",price:18900,img:"imagenes/pollo-asado.jpg"},
+      {id:2,name:"Costillar de Cerdo",price:22500,img:"imagenes/platos-fuertes.jpg"},
+      {id:3,name:"Tarta de Manzana",price:6500,img:"imagenes/postres.jpg"}
+    ];
+    const list=document.getElementById('productList');
+    products.forEach(p=>{
+      list.innerHTML+=`
+        <div class="col-md-4">
+          <div class="card h-100">
+            <img src="${p.img}" class="card-img-top" style="height:200px; object-fit:cover;">
+            <div class="card-body text-center">
+              <h5>${p.name}</h5>
+              <p class="text-primary fw-bold">$${p.price.toLocaleString()}</p>
+              <button class="btn btn-danger add-to-cart" data-id="${p.id}">Agregar</button>
             </div>
-          </div>`;
+          </div>
+        </div>`;
+    });
+
+    document.querySelectorAll('.add-to-cart').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const p=products.find(pr=>pr.id==btn.dataset.id);
+        const ex=cart.find(it=>it.id==p.id);
+        if(ex) ex.quantity++; else cart.push({...p,quantity:1});
+        saveCart(); updateMiniCart();
+        showToast(`${p.name} agregado al carrito`);
       });
     });
+  });
   </script>
 </body>
 </html>
