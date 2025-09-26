@@ -10,7 +10,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <style>
-    /* Animaciones para cada card de producto y para su respectivo modal responsivo */
     .card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
@@ -20,7 +19,6 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
   </style>
-
 </head>
 
 <body>
@@ -46,6 +44,26 @@
   <section class="py-5">
     <div class="container">
       <h2 class="fw-bold mb-4 text-center">Nuestro Catálogo</h2>
+
+      <!-- 🔎 Filtros (solo búsqueda + categoría) -->
+      <div class="row mb-4 g-2">
+        <div class="col-md-4">
+          <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto...">
+        </div>
+        <div class="col-md-4">
+          <select id="categoryFilter" class="form-select">
+            <option value="">Todas las categorías</option>
+            <option value="Pollo">Pollo</option>
+            <option value="Carne">Carne</option>
+            <option value="Ensaladas">Ensaladas</option>
+            <option value="Mariscos">Mariscos</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button id="clearFilters" class="btn btn-secondary w-100">Limpiar</button>
+        </div>
+      </div>
+
       <div id="productList" class="row g-4"></div>
     </div>
   </section>
@@ -77,7 +95,6 @@
 
   <script>
   document.addEventListener('DOMContentLoaded',()=>{
-    // --- Toast ---
     function showToast(msg,color='success'){ 
       const c=document.getElementById('toast-container'); 
       const t=document.createElement('div');
@@ -92,40 +109,60 @@
     function updateMiniCart(){document.getElementById('mini-cart-count').textContent=cart.reduce((s,i)=>s+(i.quantity||1),0);}
     updateMiniCart();
 
-    // --- Productos ---
+    // --- Productos con categorías ---
     const products=[
-      {id:1,name:"Pollo Rostizado Entero",price:18900,img:"imagenes/pollo4.jpg",desc:"Pollo entero rostizado lentamente con hierbas y especias caseras."},
-      {id:2,name:"Costillar de Cerdo",price:22500,img:"imagenes/pollo2.jpg",desc:"Costillar jugoso, marinado 24h y cocinado al horno de leña."},
-      {id:3,name:"Empanada de Pino al horno",price:6500,img:"imagenes/empanadas.jpg",desc:"Empanada tradicional rellena de carne, cebolla y huevo duro."},
-      {id:4,name:"Pastel de Choclo",price:12000,img:"imagenes/pchoclo.jpg",desc:"Delicioso pastel de choclo con carne, pollo y huevo duro."},
-      {id:5,name:"Ensalada Chilena",price:3000,img:"imagenes/ensalada.jpg",desc:"Fresca ensalada de tomate, cebolla y cilantro con aceite de oliva."},
-      {id:6,name:"Ensalada Cesar",price:6000,img:"imagenes/ensalada2.jpg",desc:"Clásica ensalada César con pollo, crutones y aderezo especial."},
-      {id:7,name:"Paella de Mariscos",price:15000,img:"imagenes/paella.jpg",desc:"Paella tradicional con arroz, mariscos frescos y azafrán."},
-      {id:8,name:"Berenjena Rellena",price:8000,img:"imagenes/berenjenaqueso.jpg",desc:"Berenjena al horno rellena de carne, verduras y queso gratinado."},
-      {id:9,name:"Pollo al Jugo + Acompañamiento",price:8990,img:"imagenes/pollo3.jpg",desc:"Pollo al jugo acompañado de papas doradas o ensalada fresca."},
-      {id:10,name:"1/4 Pollo con Papas Fritas",price:7500,img:"imagenes/pollopapa.jpg",desc:"Pollo rostizado con papas fritas caseras y ensalada chilena."},
-      {id:11,name:""}
-     
+      {id:1,name:"Pollo Rostizado Entero",price:18900,img:"imagenes/pollo4.jpg",desc:"Pollo entero rostizado lentamente con hierbas y especias caseras.",category:"Pollo"},
+      {id:2,name:"Costillar de Cerdo",price:22500,img:"imagenes/pollo2.jpg",desc:"Costillar jugoso, marinado 24h y cocinado al horno de leña.",category:"Carne"},
+      {id:3,name:"Empanada de Pino al horno",price:6500,img:"imagenes/empanadas.jpg",desc:"Empanada tradicional rellena de carne, cebolla y huevo duro.",category:"Carne"},
+      {id:4,name:"Pastel de Choclo",price:12000,img:"imagenes/pchoclo.jpg",desc:"Delicioso pastel de choclo con carne, pollo y huevo duro.",category:"Carne"},
+      {id:5,name:"Ensalada Chilena",price:3000,img:"imagenes/ensalada.jpg",desc:"Fresca ensalada de tomate, cebolla y cilantro con aceite de oliva.",category:"Ensaladas"},
+      {id:6,name:"Ensalada César",price:6000,img:"imagenes/ensalada2.jpg",desc:"Clásica ensalada César con pollo, crutones y aderezo especial.",category:"Ensaladas"},
+      {id:7,name:"Paella de Mariscos",price:15000,img:"imagenes/paella.jpg",desc:"Paella tradicional con arroz, mariscos frescos y azafrán.",category:"Mariscos"},
+      {id:8,name:"Berenjena Rellena",price:8000,img:"imagenes/berenjenaqueso.jpg",desc:"Berenjena al horno rellena de carne, verduras y queso gratinado.",category:"Ensaladas"},
+      {id:9,name:"Pollo al Jugo + Acompañamiento",price:8990,img:"imagenes/pollo3.jpg",desc:"Pollo al jugo acompañado de papas doradas o ensalada fresca.",category:"Pollo"},
+      {id:10,name:"1/4 Pollo con Papas Fritas",price:7500,img:"imagenes/pollopapa.jpg",desc:"Pollo rostizado con papas fritas caseras y ensalada chilena.",category:"Pollo"}
     ];
 
-    // Render cards
-    /*hace que aparezca un poco de la descripcion del producto*/
     const list=document.getElementById('productList');
-    products.forEach(p=>{
-      list.innerHTML+=`
-        <div class="col-md-4">
-          <div class="card h-100 product-card" data-id="${p.id}">
-            <img src="${p.img}" class="card-img-top" style="height:200px; object-fit:cover;">
-            <div class="card-body text-center">
-              <h5>${p.name}</h5>
-              <p class="text-primary fw-bold">$${p.price.toLocaleString()}</p>
-              <small class="text-muted">${p.desc.substring(0,40)}...</small>
-            </div>
-          </div>
-        </div>`;
-    });
 
-    // Modal referencias
+    function renderProducts(filtered=products){
+      list.innerHTML="";
+      if(filtered.length===0){
+        list.innerHTML="<p class='text-center text-muted'>No se encontraron productos</p>";
+        return;
+      }
+      filtered.forEach(p=>{
+        list.innerHTML+=`
+          <div class="col-md-4">
+            <div class="card h-100 product-card" data-id="${p.id}">
+              <img src="${p.img}" class="card-img-top" style="height:200px; object-fit:cover;">
+              <div class="card-body text-center">
+                <h5>${p.name}</h5>
+                <p class="text-primary fw-bold">$${p.price.toLocaleString()}</p>
+                <small class="text-muted">${p.desc.substring(0,40)}...</small>
+                <div><span class="badge bg-secondary mt-2">${p.category}</span></div>
+              </div>
+            </div>
+          </div>`;
+      });
+
+      // Evento click en las cards
+      document.querySelectorAll('.product-card').forEach(card=>{
+        card.addEventListener('click',()=>{
+          const id=card.dataset.id;
+          selectedProduct=products.find(p=>p.id==id);
+          modalTitle.textContent=selectedProduct.name;
+          modalImg.src=selectedProduct.img;
+          modalDesc.textContent=selectedProduct.desc;
+          modalPrice.textContent="$"+selectedProduct.price.toLocaleString();
+          modal.show();
+        });
+      });
+    }
+
+    renderProducts();
+
+    // --- Modal ---
     const modal=new bootstrap.Modal(document.getElementById('productModal'));
     const modalTitle=document.getElementById('modalTitle');
     const modalImg=document.getElementById('modalImg');
@@ -134,20 +171,6 @@
     const modalAddBtn=document.getElementById('modalAddBtn');
     let selectedProduct=null;
 
-    // Abrir modal al hacer click en card
-    document.querySelectorAll('.product-card').forEach(card=>{
-      card.addEventListener('click',()=>{
-        const id=card.dataset.id;
-        selectedProduct=products.find(p=>p.id==id);
-        modalTitle.textContent=selectedProduct.name;
-        modalImg.src=selectedProduct.img;
-        modalDesc.textContent=selectedProduct.desc;
-        modalPrice.textContent="$"+selectedProduct.price.toLocaleString();
-        modal.show();
-      });
-    });
-
-    // Botón agregar dentro del modal
     modalAddBtn.addEventListener('click',()=>{
       if(selectedProduct){
         const ex=cart.find(it=>it.id==selectedProduct.id);
@@ -156,6 +179,30 @@
         showToast(`${selectedProduct.name} agregado al carrito`);
         modal.hide();
       }
+    });
+
+    // --- Filtros ---
+    const searchInput=document.getElementById('searchInput');
+    const categoryFilter=document.getElementById('categoryFilter');
+    const clearFilters=document.getElementById('clearFilters');
+
+    function applyFilters(){
+      const text=searchInput.value.toLowerCase();
+      const category=categoryFilter.value;
+
+      const filtered=products.filter(p=>
+        (p.name.toLowerCase().includes(text) || p.desc.toLowerCase().includes(text)) &&
+        (category==="" || p.category===category)
+      );
+      renderProducts(filtered);
+    }
+
+    searchInput.addEventListener('input',applyFilters);
+    categoryFilter.addEventListener('change',applyFilters);
+    clearFilters.addEventListener('click',()=>{
+      searchInput.value="";
+      categoryFilter.value="";
+      renderProducts();
     });
   });
   </script>
