@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión de Pedido - Rostisería SC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="DiseñoPag.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container"><a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a></div>
+  </nav>
+
+  <div class="container py-4" id="root">
+    <h2 class="fw-bold mb-3">Estado de tu pedido</h2>
+    <div id="orderWrap"></div>
+    <div class="mt-3" id="actions"></div>
+  </div>
+
+  <script src="TiempoSesion.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const id = new URLSearchParams(location.search).get('id');
+    const orders = JSON.parse(localStorage.getItem('rostiseria_orders')||'[]');
+    const order = orders.find(o=>o.id===id);
+    const orderWrap = document.getElementById('orderWrap');
+    const actions = document.getElementById('actions');
+
+    if(!order){ orderWrap.innerHTML='<div class="alert alert-warning">No se encontró el pedido.</div>'; return; }
+
+    function percent(){
+      return order.status==='Pendiente'?20:
+             order.status==='En preparación'?40:
+             order.status==='Listo'?60:
+             order.status==='En camino'?80:100;
+    }
+    function pillClass(){
+      return order.status==='Anulado'?'text-bg-danger':
+             order.status==='Entregado'?'text-bg-success':
+             order.status==='En camino'?'text-bg-info':'text-bg-secondary';
+    }
+
+    function render(){
+      const now = Date.now();
+      const canCancel = order.status!=='Anulado' && order.status!=='Entregado' && now < order.cancelUntil;
+      const left = Math.max(0, Math.ceil((order.cancelUntil - now)/60000));
+
+      orderWrap.innerHTML = `
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div><strong>Pedido:</strong> ${order.id}</div>
+              <div><span class="badge ${pillClass()}">${order.status}</span></div>
+            </div>
+            <hr>
+            <p class="mb-1"><strong>Cliente:</strong> ${order.name}</p>
+            <p class="mb-1"><strong>Dirección:</strong> ${order.address}</p>
+            <p class="mb-1"><strong>Total:</strong> $${(order.total||0).toLocaleString()}</p>
+            <p class="mb-0"><strong>Fecha:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+          </div>
+        </div>
+        <div class="progress mt-3" style="height:10px">
+          <div class="progress-bar" style="width:${percent()}%"></div>
+        </div>`;
+
+      actions.innerHTML = '';
+      if(canCancel){
+        const btn=document.createElement('button');
+        btn.className='btn btn-outline-danger';
+        btn.textContent='Anular pedido ('+left+' min restantes)';
+        btn.addEventListener('click',()=>{
+          order.status='Anulado';
+          localStorage.setItem('rostiseria_orders', JSON.stringify(orders));
+          render();
+        });
+        actions.appendChild(btn);
+      } else if(order.status!=='Anulado' && order.status!=='Entregado'){
+        const s=document.createElement('small'); s.className='text-muted'; s.textContent='La anulación ya no está disponible.'; actions.appendChild(s);
+      }
+    }
+    render();
+
+    // Simulación de avance de estado (demo)
+    setTimeout(()=>{ if(order.status==='Pendiente'){ order.status='En preparación'; localStorage.setItem('rostiseria_orders', JSON.stringify(orders)); render(); } }, 3000);
+    setTimeout(()=>{ if(order.status==='En preparación'){ order.status='Listo'; localStorage.setItem('rostiseria_orders', JSON.stringify(orders)); render(); } }, 7000);
+    setTimeout(()=>{ if(order.status==='Listo'){ order.status='En camino'; localStorage.setItem('rostiseria_orders', JSON.stringify(orders)); render(); } }, 11000);
+  });
+  </script>
+</body>
+</html>
