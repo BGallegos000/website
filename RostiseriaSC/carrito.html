@@ -34,6 +34,7 @@
   <!-- Toast container -->
   <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
 
+  <script src="TiempoSesion.js"></script>
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     // Helpers
@@ -54,8 +55,6 @@
 
     // Estado del carrito
     let cart = JSON.parse(localStorage.getItem('rostiseria_cart') || '[]');
-
-    // Elementos DOM
     const cartItemsEl = document.getElementById('cart-items');
     const subtotalEl = document.getElementById('subtotal');
     const envioEl = document.getElementById('envio');
@@ -63,14 +62,8 @@
     const checkoutBtn = document.getElementById('checkout');
     const clearBtn = document.getElementById('clear-cart');
 
-    // Guardar y sincronizar mini-count (si hay navbar en otras páginas lee esta clave)
-    function saveCart() {
-      localStorage.setItem('rostiseria_cart', JSON.stringify(cart));
-      // Intentamos actualizar contador en otras páginas si están abiertas (simplemente almacenamos)
-      // Si quieres, otras páginas leen esta clave en load.
-    }
+    function money(n){ return '$' + (n||0).toLocaleString(); }
 
-    // Render del carrito
     function renderCart() {
       cartItemsEl.innerHTML = '';
       if (!cart || cart.length === 0) {
@@ -95,7 +88,7 @@
             <div class="d-flex align-items-center" style="gap:12px;">
               <div class="input-group input-group-sm" style="width:120px;">
                 <button class="btn btn-outline-secondary btn-decrease" data-idx="${idx}" type="button">-</button>
-                <input type="text" class="form-control text-center qty-input" value="${item.quantity || 1}" data-idx="${idx}" readonly>
+                <input type="text" class="form-control text-center quantity-input" value="${item.quantity || 1}" data-idx="${idx}" readonly>
                 <button class="btn btn-outline-secondary btn-increase" data-idx="${idx}" type="button">+</button>
               </div>
               <div class="fw-bold">$${((item.price || 0) * (item.quantity || 1)).toLocaleString()}</div>
@@ -107,17 +100,17 @@
       }
 
       // Totales
-      const subtotal = cart.reduce((s, it) => s + ((it.price || 0) * (it.quantity || 1)), 0);
-      const envio = subtotal > 0 ? 2000 : 0;
-      subtotalEl.textContent = '$' + subtotal.toLocaleString();
-      envioEl.textContent = '$' + envio.toLocaleString();
-      totalEl.textContent = '$' + (subtotal + envio).toLocaleString();
+      const subtotal = (cart||[]).reduce((s,i)=> s + ((i.price||0) * (i.quantity||1)), 0);
+      const envio = subtotal > 0 ? 0 : 0; // envío fijo 0 en demo
+      const total = subtotal + envio;
+      subtotalEl.textContent = money(subtotal);
+      envioEl.textContent = money(envio);
+      totalEl.textContent = money(total);
 
-      // Guardar estado
-      saveCart();
+      localStorage.setItem('rostiseria_cart', JSON.stringify(cart));
     }
 
-    // Delegación eventos (aumentar, disminuir, eliminar)
+    // Delegación de eventos
     cartItemsEl.addEventListener('click', (e) => {
       const incBtn = e.target.closest('.btn-increase');
       const decBtn = e.target.closest('.btn-decrease');
@@ -153,18 +146,40 @@
       }
     });
 
-    // Checkout
+    // Checkout por prompts (sin alterar la UI existente)
     checkoutBtn.addEventListener('click', () => {
-      if (!cart || cart.length === 0) {
-        showToast('Tu carrito está vacío', 'danger');
-        return;
-      }
-      // Simular proceso de pago
-      showToast('Compra realizada con éxito. Gracias por tu pedido', 'info');
+      if (!cart || cart.length === 0) { showToast('Tu carrito está vacío','danger'); return; }
+
+      const name = (prompt('Nombre y apellido:')||'').trim();
+      if(!name){ showToast('Compra cancelada','warning'); return; }
+
+      const phone = (prompt('Teléfono de contacto:')||'').trim();
+      if(!phone){ showToast('Compra cancelada','warning'); return; }
+
+      const address = (prompt('Dirección de entrega (debe incluir "Santiago"):')||'').trim();
+      if(!/santiago/i.test(address)){ showToast('Dirección fuera de cobertura (solo Santiago).','danger'); return; }
+
+      // Crear pedido
+      const totalValue = cart.reduce((s,i)=> s + ((i.price||0) * (i.quantity||1)), 0);
+      const order = {
+        id: 'ORD-' + Date.now(),
+        name, phone, address,
+        items: cart,
+        total: totalValue,
+        status: 'Pendiente',
+        createdAt: Date.now(),
+        cancelUntil: Date.now() + 10*60*1000, // 10 min para anulación
+        emailConfirmSent: true
+      };
+      const orders = JSON.parse(localStorage.getItem('rostiseria_orders')||'[]');
+      orders.push(order);
+      localStorage.setItem('rostiseria_orders', JSON.stringify(orders));
+
+      // Vaciar carrito y redirigir
       cart = [];
       renderCart();
-      // opcional: redirigir a 'index.html' o a una página de gracias
-      // window.location.href = 'index.html';
+      showToast('Pago Webpay simulado exitoso. ¡Gracias por tu compra!','info');
+      setTimeout(()=>{ window.location.href = 'GestionPedidos.html?id='+encodeURIComponent(order.id); }, 600);
     });
 
     // Vaciar carrito
@@ -175,7 +190,7 @@
       showToast('Carrito vaciado', 'warning');
     });
 
-    // Inicializar render
+    // Inicializar
     renderCart();
   });
   </script>
