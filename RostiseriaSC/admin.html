@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Rostisería SC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="DiseñoPag.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    /* ---- Kanban ---- */
+    .kanban { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+    .kanban-col { background: #fff; border: 1px solid var(--border); border-radius: .75rem; min-height: 280px; }
+    .kanban-col header { padding: .75rem 1rem; border-bottom: 1px solid var(--border); font-weight: 600; display:flex; align-items:center; justify-content:space-between;}
+    .kanban-col .list { padding: .75rem; min-height: 220px; }
+    .order-card { user-select: none; border: 1px solid var(--border); border-radius: .75rem; padding:.75rem; margin-bottom:.75rem; background:#fff; box-shadow: var(--shadow); }
+    .order-card.urgent { border-color: #dc3545; box-shadow: 0 0 0 .15rem rgba(220,53,69,.1); }
+    .order-card[draggable="true"] { cursor: grab; }
+    .drop-hover { outline: 2px dashed var(--brand); outline-offset: -6px; }
+
+    /* ---- Dashboard widgets drag ---- */
+    .widget { border: 1px solid var(--border); border-radius: .75rem; background:#fff; padding:1rem; box-shadow:var(--shadow); }
+    .widget[draggable="true"] { cursor: move; }
+    .widgets-grid { display:grid; grid-template-columns: repeat(12, 1fr); gap:16px; }
+    .w-4 { grid-column: span 4; }
+    .w-8 { grid-column: span 8; }
+
+    /* ---- Reporte: tabla y print ---- */
+    .report-toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items: center; }
+    .report-table tbody tr:hover { background: #fff9f6; }
+    @media print{
+      nav, .nav, .tab-content>.tab-pane:not(.active), .report-toolbar .btn, .report-toolbar .form-control, .report-toolbar .form-select { display:none!important; }
+      .report-area { margin-top: 0; }
+      .report-table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar (coherente con el resto del sitio) -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+          <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
+          <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
+          <li class="nav-item"><a class="nav-link" href="carrito.html"><i class="bi bi-cart3"></i> Carrito <span class="badge bg-danger" id="mini-cart-count">0</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="admin.html">Admin</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <h2 class="fw-bold mb-3">Panel de Administración</h2>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-3" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-pedidos" data-bs-toggle="pill" data-bs-target="#pane-pedidos" type="button" role="tab">Tablero de pedidos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-dashboard" data-bs-toggle="pill" data-bs-target="#pane-dashboard" type="button" role="tab">Dashboard de métricas</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-reportes" data-bs-toggle="pill" data-bs-target="#pane-reportes" type="button" role="tab">Reportes de ventas</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+      <!-- =============== PEDIDOS (KANBAN) =============== -->
+      <section class="tab-pane fade show active" id="pane-pedidos" role="tabpanel" aria-labelledby="tab-pedidos">
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <input id="searchOrders" class="form-control" placeholder="Buscar por ID o cliente">
+          </div>
+          <div class="col-md-3">
+            <select id="urgentFilter" class="form-select">
+              <option value="">Todos</option>
+              <option value="1">Solo urgentes</option>
+              <option value="0">Solo no urgentes</option>
+            </select>
+          </div>
+          <div class="col-md-5 text-end">
+            <button id="seedDemo" class="btn btn-outline-secondary">Cargar pedidos demo</button>
+          </div>
+        </div>
+
+        <div class="kanban" id="kanban">
+          <!-- columnas generadas por JS -->
+        </div>
+      </section>
+
+      <!-- =============== DASHBOARD =============== -->
+      <section class="tab-pane fade" id="pane-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+        <div class="widgets-grid" id="widgetsGrid" aria-live="polite">
+          <div class="widget w-4" draggable="true" data-widget="ventas-hoy" aria-label="Widget Ventas hoy">
+            <h5 class="mb-3">Ventas hoy</h5>
+            <div class="display-6" id="ventasHoy">$0</div>
+            <small class="text-muted">Total de ventas del día</small>
+          </div>
+
+          <div class="widget w-4" draggable="true" data-widget="pendientes" aria-label="Widget Pedidos pendientes">
+            <h5 class="mb-3">Pedidos pendientes</h5>
+            <div class="display-6" id="pedidosPendientes">0</div>
+            <small class="text-muted">Incluye Pendiente y En preparación</small>
+          </div>
+
+          <div class="widget w-4" draggable="true" data-widget="top-productos" aria-label="Widget Top productos">
+            <h5 class="mb-3">Top productos (Top 5)</h5>
+            <ol id="topProductos" class="mb-0"></ol>
+          </div>
+
+          <div class="widget w-8" draggable="true" data-widget="mini-graf" aria-label="Widget Resumen semanal">
+            <h5 class="mb-3">Resumen semanal (ingresos)</h5>
+            <div id="miniChart" class="text-muted">[vista simplificada sin librerías: suma diaria en texto]</div>
+          </div>
+        </div>
+        <div class="mt-3 text-end">
+          <button id="resetLayout" class="btn btn-outline-secondary">Restablecer diseño</button>
+        </div>
+      </section>
+
+      <!-- =============== REPORTES =============== -->
+      <section class="tab-pane fade" id="pane-reportes" role="tabpanel" aria-labelledby="tab-reportes">
+        <div class="report-toolbar mb-3">
+          <input type="date" id="dateFrom" class="form-control" aria-label="Fecha desde">
+          <input type="date" id="dateTo" class="form-control" aria-label="Fecha hasta">
+          <input type="text" id="prodText" class="form-control" placeholder="Producto...">
+          <select id="catFilter" class="form-select">
+            <option value="">Todas las categorías</option>
+          </select>
+          <button id="applyRpt" class="btn btn-danger"><i class="bi bi-funnel"></i> Aplicar</button>
+          <button id="clearRpt" class="btn btn-outline-secondary">Limpiar</button>
+          <button id="exportCSV" class="btn btn-success"><i class="bi bi-filetype-csv"></i> Exportar CSV</button>
+          <button id="printPDF" class="btn btn-outline-dark"><i class="bi bi-filetype-pdf"></i> Imprimir (PDF)</button>
+        </div>
+
+        <div class="report-area">
+          <table class="table table-striped align-middle report-table">
+            <thead class="table-light">
+              <tr>
+                <th>Fecha</th><th>ID Pedido</th><th>Producto</th><th>Categoría</th><th>Cant.</th><th>Precio</th><th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="rptBody"></tbody>
+            <tfoot>
+              <tr class="fw-bold">
+                <td colspan="6" class="text-end">Total</td>
+                <td id="rptTotal">$0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
+  <script src="TiempoSesion.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+
+    /* ------------------------- Utilidades comunes ------------------------- */
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const MONEY = n => '$' + (n||0).toLocaleString();
+    function showToast(msg,color='success'){
+      const c=document.getElementById('toast-container');
+      const t=document.createElement('div');
+      t.className='toast align-items-center text-white bg-'+color+' border-0 mb-2';
+      t.innerHTML='<div class="d-flex"><div class="toast-body">'+msg+'</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+      c.appendChild(t); new bootstrap.Toast(t).show(); t.addEventListener('hidden.bs.toast',()=>t.remove());
+    }
+
+    // Mini contador del carrito en navbar
+    const cart = JSON.parse(localStorage.getItem('rostiseria_cart')||'[]');
+    const mini = document.getElementById('mini-cart-count'); if(mini) mini.textContent = cart.reduce((s,i)=>s+(i.quantity||1),0);
+
+    /* ------------------------- Datos ------------------------- */
+    function getOrders(){ return JSON.parse(localStorage.getItem('rostiseria_orders')||'[]'); }
+    function saveOrders(o){ localStorage.setItem('rostiseria_orders', JSON.stringify(o)); }
+
+    /* ========================= TAB PEDIDOS (KANBAN) ========================= */
+    const STATUSES = ['Pendiente','En preparación','Listo','En camino','Entregado'];
+    const kanban = $('#kanban');
+    const searchOrders = $('#searchOrders');
+    const urgentFilter = $('#urgentFilter');
+    const seedDemoBtn = $('#seedDemo');
+
+    function renderKanban(){
+      const q = (searchOrders.value||'').toLowerCase();
+      const u = urgentFilter.value;
+      const orders = getOrders();
+
+      kanban.innerHTML = '';
+      STATUSES.forEach(st=>{
+        const col = document.createElement('div');
+        col.className = 'kanban-col';
+        col.dataset.status = st;
+        col.innerHTML = '<header>'+st+' <span class="badge rounded-pill text-bg-light">'+orders.filter(o=>o.status===st).length+'</span></header><div class="list" aria-label="Columna '+st+'" role="list"></div>';
+        kanban.appendChild(col);
+      });
+
+      // Render cards
+      orders.forEach(o=>{
+        if(q && !(o.id.toLowerCase().includes(q) || (o.name||'').toLowerCase().includes(q))) return;
+        if(u !== '' && String(o.urgent?1:0) !== u) return;
+
+        const card = document.createElement('div');
+        card.className = 'order-card'+(o.urgent?' urgent':'');
+        card.setAttribute('draggable','true');
+        card.dataset.id = o.id;
+        card.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-bold">${o.id}</div>
+              <div class="small text-muted">${new Date(o.createdAt).toLocaleString()}</div>
+              <div class="small">${o.name||'Cliente'}</div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold">${MONEY(o.total)}</div>
+              <button class="btn btn-sm ${o.urgent?'btn-danger':'btn-outline-danger'} toggle-urgent" title="Marcar urgente"><i class="bi bi-exclamation-triangle-fill"></i></button>
+            </div>
+          </div>
+          <div class="mt-2 d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary assign-rider"><i class="bi bi-bicycle"></i> Asignar</button>
+            <button class="btn btn-sm btn-outline-primary view-order"><i class="bi bi-eye"></i> Ver</button>
+          </div>
+        `;
+        const host = kanban.querySelector('.kanban-col[data-status="'+(o.status||'Pendiente')+'"] .list');
+        if(host) host.appendChild(card);
+      });
+
+      // Drag & drop entre columnas (actualiza estado)
+      $$('.order-card').forEach(card=>{
+        card.addEventListener('dragstart', ev=>{
+          ev.dataTransfer.setData('text/plain', card.dataset.id);
+        });
+      });
+      $$('.kanban-col .list').forEach(list=>{
+        list.addEventListener('dragover', ev=>{ ev.preventDefault(); list.classList.add('drop-hover'); });
+        list.addEventListener('dragleave', ()=> list.classList.remove('drop-hover'));
+        list.addEventListener('drop', ev=>{
+          ev.preventDefault();
+          list.classList.remove('drop-hover');
+          const id = ev.dataTransfer.getData('text/plain');
+          const orders = getOrders();
+          const o = orders.find(x=>x.id===id);
+          if(!o) return;
+          const newStatus = list.closest('.kanban-col').dataset.status;
+          o.status = newStatus;
+          saveOrders(orders);
+          renderKanban();
+          showToast('Pedido '+id+' → '+newStatus, 'info');
+        });
+      });
+
+      // Acciones por tarjeta
+      $$('.order-card .toggle-urgent').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = btn.closest('.order-card').dataset.id;
+          const orders = getOrders();
+          const o = orders.find(x=>x.id===id);
+          o.urgent = !o.urgent;
+          saveOrders(orders);
+          renderKanban();
+        });
+      });
+      $$('.order-card .assign-rider').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = btn.closest('.order-card').dataset.id;
+          const name = prompt('Nombre del repartidor:');
+          if(!name) return;
+          const orders = getOrders();
+          const o = orders.find(x=>x.id===id);
+          o.assignedRider = name;
+          o.status = 'En camino';
+          saveOrders(orders);
+          renderKanban();
+          showToast('Pedido '+id+' asignado a '+name+' y marcado En camino','success');
+        });
+      });
+      $$('.order-card .view-order').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = btn.closest('.order-card').dataset.id;
+          window.location.href = 'GestionPedidos.html?id='+encodeURIComponent(id);
+        });
+      });
+    }
+
+    // Filtros + demo
+    [searchOrders, urgentFilter].forEach(el=> el.addEventListener('input', renderKanban));
+    seedDemoBtn.addEventListener('click', ()=>{
+      const now = Date.now();
+      const demo = [
+        {id:'ORD-'+(now-40000), name:'María', address:'Santiago', items:[], total:18900, status:'Pendiente', createdAt: now-40000},
+        {id:'ORD-'+(now-30000), name:'Luis', address:'Santiago', items:[], total:22500, status:'En preparación', createdAt: now-30000, urgent:true},
+        {id:'ORD-'+(now-20000), name:'Ana', address:'Santiago', items:[], total:12000, status:'Listo', createdAt: now-20000},
+        {id:'ORD-'+(now-10000), name:'Diego', address:'Santiago', items:[], total:15000, status:'En camino', createdAt: now-10000}
+      ];
+      const orders = getOrders().concat(demo);
+      saveOrders(orders);
+      renderKanban();
+      showToast('Pedidos de prueba cargados','info');
+    });
+
+    /* ========================= TAB DASHBOARD ========================= */
+    const widgetsGrid = $('#widgetsGrid');
+    const ventasHoyEl = $('#ventasHoy');
+    const pendientesEl = $('#pedidosPendientes');
+    const topProductosEl = $('#topProductos');
+    const miniChartEl = $('#miniChart');
+    const LAYOUT_KEY = 'admin_dashboard_layout';
+
+    function calcMetrics(){
+      const orders = getOrders();
+      const today = new Date(); today.setHours(0,0,0,0);
+      const ventasHoy = orders
+        .filter(o=>o.createdAt && new Date(o.createdAt)>=today && o.status!=='Anulado')
+        .reduce((s,o)=> s+(o.total||0), 0);
+      ventasHoyEl.textContent = MONEY(ventasHoy);
+
+      const pendientes = orders.filter(o=>['Pendiente','En preparación'].includes(o.status)).length;
+      pendientesEl.textContent = pendientes;
+
+      // top productos: sumar cantidades por nombre
+      const map = {};
+      orders.forEach(o=>{
+        (o.items||[]).forEach(it=>{
+          const name = it.name || 'Producto';
+          map[name] = (map[name]||0) + (it.quantity||1);
+        });
+      });
+      const top = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      topProductosEl.innerHTML = top.length? top.map(([n,q])=>`<li>${n} <span class="badge bg-secondary ms-2">${q}</span></li>`).join('') : '<li class="text-muted">Sin datos</li>';
+
+      // resumen semanal simple (texto)
+      const dayMs = 86400000, start = new Date(); start.setHours(0,0,0,0); start.setTime(start.getTime()-6*dayMs);
+      const days = Array.from({length:7}, (_,i)=> new Date(start.getTime()+i*dayMs));
+      const sums = days.map(d=>{
+        const next = new Date(d.getTime()+dayMs);
+        const sum = orders.filter(o=>o.createdAt>=d.getTime() && o.createdAt<next.getTime() && o.status!=='Anulado')
+                          .reduce((s,o)=>s+(o.total||0),0);
+        return {d: d.toLocaleDateString(), sum};
+      });
+      miniChartEl.textContent = sums.map(x=>`${x.d}: ${MONEY(x.sum)}`).join(' | ');
+    }
+
+    // Drag de widgets + persistencia
+    let dragWidget = null;
+    widgetsGrid.addEventListener('dragstart', e=>{
+      const w = e.target.closest('.widget'); if(!w) return;
+      dragWidget = w; e.dataTransfer.effectAllowed = 'move';
+    });
+    widgetsGrid.addEventListener('dragover', e=>{
+      e.preventDefault();
+      const over = e.target.closest('.widget'); if(!over || over===dragWidget) return;
+      const widgets = $$('.widget');
+      const a = widgets.indexOf(dragWidget), b = widgets.indexOf(over);
+      if(a<b) widgetsGrid.insertBefore(over, dragWidget); else widgetsGrid.insertBefore(dragWidget, over);
+    });
+    widgetsGrid.addEventListener('dragend', ()=>{
+      dragWidget = null;
+      const order = $$('.widget').map(w=>w.dataset.widget);
+      localStorage.setItem(LAYOUT_KEY, JSON.stringify(order));
+      showToast('Diseño guardado','info');
+    });
+
+    function restoreLayout(){
+      try{
+        const order = JSON.parse(localStorage.getItem(LAYOUT_KEY)||'[]');
+        if(!order.length) return;
+        order.forEach(key=>{
+          const w = widgetsGrid.querySelector(`[data-widget="${key}"]`);
+          if(w) widgetsGrid.appendChild(w);
+        });
+      }catch(e){}
+    }
+    $('#resetLayout').addEventListener('click', ()=>{
+      localStorage.removeItem(LAYOUT_KEY);
+      location.reload();
+    });
+
+    /* ========================= TAB REPORTES ========================= */
+    const dateFrom = $('#dateFrom'), dateTo = $('#dateTo'), prodText = $('#prodText'), catFilter = $('#catFilter');
+    const applyRpt = $('#applyRpt'), clearRpt = $('#clearRpt'), exportCSV = $('#exportCSV'), printPDF = $('#printPDF');
+    const rptBody = $('#rptBody'), rptTotal = $('#rptTotal');
+
+    // poblar categorías desde orders
+    function populateCategories(){
+      const set = new Set();
+      getOrders().forEach(o=> (o.items||[]).forEach(it=>{ if(it.category) set.add(it.category); }));
+      catFilter.innerHTML = '<option value="">Todas las categorías</option>' + Array.from(set).sort().map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
+
+    function filterReportRows(){
+      const from = dateFrom.value ? new Date(dateFrom.value).getTime() : -Infinity;
+      const to = dateTo.value ? (new Date(dateTo.value).getTime()+86399999) : Infinity;
+      const text = (prodText.value||'').toLowerCase();
+      const cat = catFilter.value;
+
+      const rows = [];
+      getOrders().forEach(o=>{
+        if(!o.items || !o.items.length) return;
+        if(o.createdAt<from || o.createdAt>to) return;
+        if(o.status==='Anulado') return;
+        o.items.forEach(it=>{
+          if(text && !((it.name||'').toLowerCase().includes(text))) return;
+          if(cat && it.category!==cat) return;
+          const qty = it.quantity||1, price = it.price||0, sub = qty*price;
+          rows.push({date: new Date(o.createdAt).toLocaleDateString(), id:o.id, name:it.name||'Producto', category:it.category||'', qty, price, sub});
+        });
+      });
+      return rows;
+    }
+
+    function renderReport(){
+      const rows = filterReportRows();
+      rptBody.innerHTML = rows.map(r=>`<tr>
+        <td>${r.date}</td><td>${r.id}</td><td>${r.name}</td><td>${r.category}</td>
+        <td>${r.qty}</td><td>${MONEY(r.price)}</td><td>${MONEY(r.sub)}</td>
+      </tr>`).join('');
+      const total = rows.reduce((s,r)=>s+r.sub,0);
+      rptTotal.textContent = MONEY(total);
+    }
+
+    applyRpt.addEventListener('click', renderReport);
+    clearRpt.addEventListener('click', ()=>{
+      dateFrom.value=''; dateTo.value=''; prodText.value=''; catFilter.value='';
+      renderReport();
+    });
+
+    exportCSV.addEventListener('click', ()=>{
+      const rows = filterReportRows();
+      const head = ['Fecha','ID Pedido','Producto','Categoría','Cantidad','Precio','Subtotal'];
+      const lines = [head.join(',')].concat(rows.map(r=>[r.date,r.id,r.name,r.category,r.qty,r.price,r.sub].join(',')));
+      const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'reporte_ventas.csv';
+      a.click(); URL.revokeObjectURL(a.href);
+    });
+
+    printPDF.addEventListener('click', ()=>{ window.print(); });
+
+    /* ------------------------- Inicialización ------------------------- */
+    renderKanban();
+    calcMetrics(); restoreLayout();
+    populateCategories(); renderReport();
+
+    // recalcular métricas al cambiar de tab o cuando cambian pedidos
+    document.getElementById('adminTabs').addEventListener('shown.bs.tab', (e)=>{
+      if(e.target.id==='tab-dashboard') calcMetrics();
+      if(e.target.id==='tab-reportes'){ populateCategories(); renderReport(); }
+    });
+
+  });
+  </script>
+</body>
+</html>
