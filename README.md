@@ -7,7 +7,9 @@ Tambien se agrega mas abajo un registro de las User Stories que se encuentran de
 
 
 
-
+Usuario de prueba:
+ana@example.com
+A1b2c3d4
 
 
 
