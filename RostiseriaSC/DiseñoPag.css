@@ -1,0 +1,178 @@
+/* ==========================================================================
+   Rostisería Sabores Caseros – Tema visual
+   - Paleta cálida y accesible, sin cambiar el layout existente
+   - Sobrescribe colores de Bootstrap con variables y toques sutiles
+   ========================================================================== */
+
+/* ---------- Paleta base (tokens) ---------- */
+:root{
+  /* Marca */
+  --brand-50:  #fff5f3;
+  --brand-100: #ffe6e2;
+  --brand-200: #ffcfc6;
+  --brand-300: #ffa89d;
+  --brand-400: #f06e5e;
+  --brand-500: #cc3d2b;  /* Rojo ají (primario) */
+  --brand-600: #b13323;
+  --brand-700: #8e271c;
+  --brand-800: #721e16;
+  --brand-900: #5b1912;
+
+  /* Acentos */
+  --accent-500: #e9a23b; /* Dorado marinado */
+  --accent-600: #cf8e2f;
+
+  /* Neutros cálidos */
+  --cream-50:  #fff8f2;
+  --cream-100: #fff2e8;
+  --cream-200: #fde8da;
+  --ink-900:   #1f2937;  /* Carbón */
+  --ink-700:   #374151;
+  --ink-500:   #6b7280;
+
+  /* Bordes/sombras */
+  --border:    #eaded6;
+  --shadow:    0 8px 24px rgba(0,0,0,.06);
+
+  /* Mapeo semántico */
+  --bg-page:   var(--cream-50);
+  --bg-card:   #ffffff;
+  --text:      #232323;
+  --text-muted:var(--ink-500);
+  --nav-bg:    #171a21;        /* navbar .bg-dark */
+  --link:      var(--brand-600);
+  --link-hov:  var(--brand-700);
+  --brand:     var(--brand-500);
+  --brand-hov: var(--brand-700);
+}
+
+/* ---------- Base global ---------- */
+html,body{
+  background: var(--bg-page);
+  color: var(--text);
+}
+a { color: var(--link); }
+a:hover, a:focus { color: var(--link-hov); }
+
+hr { border-color: var(--border); opacity: 1; }
+
+/* ---------- Navbar (oscura, sin cambiar estructura) ---------- */
+.navbar-dark.bg-dark{
+  background-color: var(--nav-bg) !important;
+}
+.navbar-brand{
+  letter-spacing: .2px;
+}
+
+/* ---------- Tarjetas ---------- */
+.card{
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  box-shadow: var(--shadow);
+}
+.card-header{
+  background: linear-gradient(0deg, #fff, #fff) padding-box,
+              linear-gradient(90deg, var(--brand-100), transparent) border-box;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+
+/* ---------- Botones: solo color, no cambia tamaños/forma ---------- */
+.btn-danger{
+  background-color: var(--brand) !important;
+  border-color: var(--brand) !important;
+}
+.btn-danger:hover,
+.btn-danger:focus{
+  background-color: var(--brand-hov) !important;
+  border-color: var(--brand-hov) !important;
+}
+.btn-outline-secondary{
+  color: var(--ink-700);
+  border-color: var(--border);
+}
+.btn-outline-secondary:hover{
+  background: var(--cream-100);
+  border-color: var(--brand-300);
+}
+
+/* ---------- Badges / Pills ---------- */
+.badge.text-bg-light{
+  background-color: var(--cream-100) !important;
+  color: var(--ink-700) !important;
+  border: 1px solid var(--border);
+}
+.badge.text-bg-secondary{
+  background-color: var(--brand-100) !important;
+  color: var(--brand-700) !important;
+  border: 1px solid var(--brand-200);
+}
+
+/* ---------- Toasts ---------- */
+.toast{
+  border-radius: .75rem;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Tablas ---------- */
+.table{
+  --bs-table-bg: #fff;
+  --bs-table-striped-bg: #fff9f6;
+  --bs-table-striped-color: inherit;
+  --bs-table-border-color: var(--border);
+}
+.table > :not(caption) > * > *{
+  border-color: var(--border);
+}
+
+/* ---------- Formularios ---------- */
+.form-control{
+  border-color: var(--border);
+}
+.form-control:focus{
+  border-color: var(--brand-300);
+  box-shadow: 0 0 0 .25rem rgba(204,61,43,.15);
+}
+.form-text{ color: var(--text-muted); }
+
+/* Estados inválidos (Bootstrap) */
+.is-invalid{
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 .25rem rgba(204,61,43,.15) !important;
+}
+
+/* ---------- Progreso (seguimiento de pedido) ---------- */
+.progress{
+  background: var(--cream-100);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.progress-bar{
+  background: linear-gradient(90deg, var(--brand), var(--accent-500));
+}
+
+/* ---------- Utilidades suaves (opcionales) ---------- */
+.bg-cream      { background: var(--cream-100) !important; }
+.text-brand    { color: var(--brand) !important; }
+.border-soft   { border-color: var(--border) !important; }
+.shadow-soft   { box-shadow: var(--shadow) !important; }
+
+/* ---------- Imágenes de lista (catálogo/carrito) ---------- */
+img{
+  image-rendering: auto;
+}
+.card-img-top{
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---------- Enlaces con icono (no invasivo) ---------- */
+a > .bi{ vertical-align: -.125em; }
+
+/* ---------- Impresión: mantiene look claro ---------- */
+@media print{
+  body{ background: #fff; }
+  .card, .table{
+    box-shadow: none !important;
+  }
+}
