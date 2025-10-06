@@ -4,35 +4,45 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rostisería Sabores Caseros - Inicio</title>
+
+  <!-- Resource Hints (mejoran rendimiento) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="DiseñoPag.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+
   <style>
     .carousel-item img { height: 380px; object-fit: cover; }
     .footer-section { background-color: #343a40; color: white; }
   </style>
 </head>
 <body>
+  <!-- Skip link (Accesibilidad): visible solo al foco -->
+  <a href="#main" class="skip-link">Saltar al contenido principal</a>
+
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" role="navigation" aria-label="Barra principal">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html">
-        <img src="imagenes/logo.jpg" alt="logo" style="height:28px; margin-right:8px;"> Rostisería Sabores Caseros
+        <img src="imagenes/logo.jpg" alt="Logo de Rostisería SC" style="height:28px; margin-right:8px;"> Rostisería SC
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Mostrar/ocultar menú">
+        <span class="navbar-toggler-icon" aria-hidden="true"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link active" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Inicio</a></li>
           <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
           <li class="nav-item"><a class="nav-link" href="nosotros.html">Nosotros</a></li>
           <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
           <li class="nav-item"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
           <li class="nav-item">
-            <a class="nav-link" href="carrito.html">
-              <i class="bi bi-cart3"></i> Carrito
+            <a class="nav-link" href="carrito.html" aria-label="Abrir carrito">
+              <i class="bi bi-cart3" aria-hidden="true"></i> Carrito
               <span class="badge bg-danger ms-1" id="mini-cart-count">0</span>
             </a>
           </li>
@@ -42,60 +52,74 @@
     </div>
   </nav>
 
-  <!-- Hero -->
-  <!-- Opción actual: imagen COMPLETA + pantalla completa -->
-  <!-- Si prefieres que “cubra” sin bandas: cambia hero-contain por hero-cover -->
-  <section class="hero-section hero-contain hero-full text-center">
-    <div class="container">
-      <h1 class="display-4 fw-bold mb-3">Los Mejores Sabores Caseros</h1>
-      <p class="lead mb-4">Disfruta nuestras especialidades con recetas tradicionales</p>
-      <div class="d-flex justify-content-center gap-2">
-        <a href="catalogo.html" class="btn btn-primary btn-lg">Ver Catálogo</a>
-        <a href="nosotros.html" class="btn btn-outline-light btn-lg">Conócenos</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Especialidades -->
-  <section class="py-5">
-    <div class="container">
-      <h2 class="fw-bold text-center mb-4">Especialidades de la Casa</h2>
-      <div id="specialtiesCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner rounded shadow-sm">
-          <div class="carousel-item active">
-            <img src="imagenes/berenjenaqueso.jpg" class="d-block w-100" alt="Pollo">
-            <div class="carousel-caption bg-dark bg-opacity-50 rounded">Al Horno</div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/pollo2.jpg" class="d-block w-100" alt="Platos">
-            <div class="carousel-caption bg-dark bg-opacity-50 rounded">Platos Fuertes</div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/pchoclo.jpg" class="d-block w-100" alt="Platos">
-            <div class="carousel-caption bg-dark bg-opacity-50 rounded">Platos Fuertes</div>
-          </div>
-          <div class="carousel-item">
-            <img src="imagenes/empanadas.jpg" class="d-block w-100" alt="Platos">
-            <div class="carousel-caption bg-dark bg-opacity-50 rounded">Al Horno</div>
-          </div>
+  <main id="main">
+    <!-- Hero (sin cambios visuales; imagen de fondo viene desde CSS) -->
+    <section class="hero-section text-center" aria-label="Bienvenida">
+      <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Los Mejores Sabores Caseros</h1>
+        <p class="lead mb-4">Disfruta nuestras especialidades con recetas tradicionales</p>
+        <div class="d-flex justify-content-center gap-2">
+          <a href="catalogo.html" class="btn btn-primary btn-lg">Ver Catálogo</a>
+          <a href="nosotros.html" class="btn btn-outline-light btn-lg">Conócenos</a>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon"></span>
-        </button>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Especialidades -->
+    <section class="py-5" aria-labelledby="especialidades-title">
+      <div class="container">
+        <h2 class="fw-bold text-center mb-4" id="especialidades-title">Especialidades de la Casa</h2>
+
+        <div id="specialtiesCarousel"
+             class="carousel slide"
+             data-bs-ride="carousel"
+             aria-roledescription="carrusel"
+             aria-label="Galería de especialidades">
+          <div class="carousel-inner rounded shadow-sm">
+            <!-- Primer slide 'eager' para mejorar LCP -->
+            <div class="carousel-item active">
+              <img src="imagenes/paella.jpg" class="d-block w-100"
+                   alt="Pollo rostizado especial"
+                   width="1200" height="380" loading="eager">
+              <div class="carousel-caption bg-dark bg-opacity-50 rounded">Delicias del Mar</div>
+            </div>
+            <div class="carousel-item">
+              <img src="imagenes/pollo2.jpg" class="d-block w-100"
+                   alt="Variedad de platos fuertes"
+                   width="1200" height="380" loading="lazy">
+              <div class="carousel-caption bg-dark bg-opacity-50 rounded">Platos Fuertes</div>
+            </div>
+            <div class="carousel-item">
+              <img src="imagenes/pchoclo.jpg" class="d-block w-100"
+                   alt="Pastel de choclo casero"
+                   width="1200" height="380" loading="lazy">
+              <div class="carousel-caption bg-dark bg-opacity-50 rounded">Platos Fuertes</div>
+            </div>
+            <div class="carousel-item">
+              <img src="imagenes/empanadas.jpg" class="d-block w-100"
+                   alt="Empanadas al horno"
+                   width="1200" height="380" loading="lazy">
+              <div class="carousel-caption bg-dark bg-opacity-50 rounded">Al Horno</div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="prev" aria-label="Anterior">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="next" aria-label="Siguiente">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <!-- Footer -->
-  <footer class="footer-section py-4 text-center">
-    <p class="mb-0">&copy; <span id="anio"></span> Rostisería Sabores Caseros</p>
+  <footer class="footer-section py-4 text-center" role="contentinfo">
+    <p class="mb-0">&copy; <span id="anio"></span> Rostisería SC</p>
   </footer>
 
-  <!-- Toast container -->
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
+  <!-- Toast container (aria-live) -->
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Script compartido -->
   <script>
@@ -105,9 +129,10 @@
       const container=document.getElementById('toast-container');
       const toast=document.createElement('div');
       toast.className=`toast align-items-center text-white bg-${color} border-0 mb-2`;
-      toast.setAttribute('role','alert');
+      toast.setAttribute('role','status');
+      toast.setAttribute('aria-live','polite');
       toast.innerHTML=`<div class="d-flex"><div class="toast-body">${msg}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button></div>`;
       container.appendChild(toast);
       new bootstrap.Toast(toast).show();
       toast.addEventListener('hidden.bs.toast',()=>toast.remove());
@@ -121,11 +146,19 @@
     }
     updateMiniCart();
 
-    // Demo
+    // Reducir movimiento (accesibilidad): pausar carrusel si aplica
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      const el = document.getElementById('specialtiesCarousel');
+      if (el) bootstrap.Carousel.getOrCreateInstance(el, { interval: false }).pause();
+    }
+
+    // Mensaje de bienvenida
     showToast("Bienvenido a Rostisería SC","info");
     document.getElementById('anio').textContent=new Date().getFullYear();
   });
   </script>
+
   <script src="TiempoSesion.js"></script>
 </body>
 </html>
