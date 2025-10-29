@@ -38,6 +38,14 @@
           <li class="nav-item"><a class="nav-link" href="carrito.html">
             <i class="bi bi-cart3"></i> Carrito <span class="badge bg-danger ms-1" id="mini-cart-count">0</span>
           </a></li>
+          <!-- Items visibles solo para administradores -->
+          <li class="nav-item admin-only d-none">
+            <a class="nav-link" href="admin.html"><i class="bi bi-speedometer2"></i> Admin</a>
+          </li>
+          <li class="nav-item admin-only d-none">
+            <a class="nav-link" href="GestionPedidos.html"><i class="bi bi-receipt"></i> Gestión de Pedidos</a>
+          </li>
+
         </ul>
       </div>
     </div>
@@ -126,6 +134,22 @@
   });
   </script>
   <script src="TiempoSesion.js"></script>
+  
+  <script>
+  const K_LOGGED = 'rostiseria_loggedUser';
+  const K_ADMINS = 'rostiseria_admins';
+
+  (function toggleAdminMenu(){
+    const email  = (localStorage.getItem(K_LOGGED) || '').toLowerCase();
+    const admins = JSON.parse(localStorage.getItem(K_ADMINS) || '[]');
+    const isAdmin = email && admins.includes(email);
+
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.classList.toggle('d-none', !isAdmin);
+    });
+  })();
+</script>
+
 
 </body>
 </html>

@@ -121,5 +121,63 @@
       showToast('Contraseña actualizada. Ya puedes iniciar sesión.');
     });
   </script>
+
+  <script>
+  // Claves de storage usadas en todo el sitio
+  const K_USERS  = 'rostiseria_users';
+  const K_LOGGED = 'rostiseria_loggedUser';
+  const K_ADMINS = 'rostiseria_admins';
+
+  // Si no existe la lista de admins, siembra uno por defecto
+  (function seedAdminOnce(){
+    const admins = JSON.parse(localStorage.getItem(K_ADMINS) || '[]');
+    if (!admins.length) {
+      localStorage.setItem(K_ADMINS, JSON.stringify(['admin@sc.cl'])); // cambia o agrega los que quieras
+    }
+  })();
+
+  // Llamar a esto cuando el login sea exitoso (email verificado)
+  function onLoginSuccess(email) {
+    // guarda la sesión
+    localStorage.setItem(K_LOGGED, email);
+
+    // ¿es admin?
+    const admins = JSON.parse(localStorage.getItem(K_ADMINS) || '[]');
+    const isAdmin = admins.includes((email || '').toLowerCase());
+
+    // redirige según rol
+    window.location.href = isAdmin ? 'admin.html' : 'index.html';
+  }
+
+  // Si ya está logueado y vuelve al login, dirigirlo de inmediato
+  (function autoRedirectIfLogged(){
+    const email = localStorage.getItem(K_LOGGED);
+    if (!email) return;
+    const admins = JSON.parse(localStorage.getItem(K_ADMINS) || '[]');
+    const isAdmin = admins.includes(email.toLowerCase());
+    window.location.replace(isAdmin ? 'admin.html' : 'index.html');
+  })();
+
+
+  const form = document.getElementById('formLogin'); // ajusta el id si es necesario
+  if (form && !form.dataset._wired) {
+    form.dataset._wired = '1';
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = (document.getElementById('email')?.value || '').trim().toLowerCase();
+      const pass  = (document.getElementById('password')?.value || '').trim();
+
+      const users = JSON.parse(localStorage.getItem(K_USERS) || '[]');
+      const ok = users.find(u => (u.email || '').toLowerCase() === email && (u.password || '') === pass);
+      if (!ok) {
+        alert('Correo y/o contraseña inválidos');
+        return;
+      }
+      // login correcto → redirige según rol
+      onLoginSuccess(email);
+    });
+  }
+</script>
+
 </body>
 </html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Panel Administrador - Rostisería SC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="DiseñoPag.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .kpi-card .display-6 { letter-spacing:.3px; }
+    .table-fixed thead th { position: sticky; top: 0; background: #fff; z-index: 1; }
+    .status-badge{ font-weight:600 }
+  </style>
+</head>
+<body class="bg-light">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Sitio</a></li>
+          <li class="nav-item"><a class="nav-link active" href="admin.html"><i class="bi bi-speedometer2"></i> Admin</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido -->
+  <div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="fw-bold m-0">Panel de Administración</h2>
+      <div><span class="text-muted me-2">Conectado como:</span><span id="adminEmail" class="fw-semibold"></span></div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-dashboard" data-bs-toggle="tab" data-bs-target="#pane-dashboard" type="button" role="tab">
+          <i class="bi bi-graph-up-arrow me-1"></i>Dashboard
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-pedidos" data-bs-toggle="tab" data-bs-target="#pane-pedidos" type="button" role="tab">
+          <i class="bi bi-receipt me-1"></i>Pedidos
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-usuarios" data-bs-toggle="tab" data-bs-target="#pane-usuarios" type="button" role="tab">
+          <i class="bi bi-people me-1"></i>Usuarios
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content border border-top-0 rounded-bottom p-3 bg-white shadow-sm">
+      <!-- Dashboard -->
+      <div class="tab-pane fade show active" id="pane-dashboard" role="tabpanel">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="card kpi-card">
+              <div class="card-body">
+                <div class="text-muted">Ventas (Hoy)</div>
+                <div class="display-6" id="kpiVentasHoy">$0</div>
+                <small class="text-muted" id="kpiPedidosHoy">0 pedidos</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card kpi-card">
+              <div class="card-body">
+                <div class="text-muted">Ventas (Mes)</div>
+                <div class="display-6" id="kpiVentasMes">$0</div>
+                <small class="text-muted" id="kpiPedidosMes">0 pedidos</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card kpi-card">
+              <div class="card-body">
+                <div class="text-muted">Ticket Promedio</div>
+                <div class="display-6" id="kpiTicket">$0</div>
+                <small class="text-muted">por pedido</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card kpi-card">
+              <div class="card-body">
+                <div class="text-muted">Pendientes</div>
+                <div class="display-6" id="kpiPendientes">0</div>
+                <small class="text-muted">por despachar</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">Top productos (conteo en pedidos)</div>
+              <div class="card-body">
+                <ol id="topProductos" class="mb-0"></ol>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">Estados de pedidos</div>
+              <div class="card-body">
+                <ul id="resumenEstados" class="list-group list-group-flush"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedidos -->
+      <div class="tab-pane fade" id="pane-pedidos" role="tabpanel">
+        <div class="d-flex flex-wrap gap-2 align-items-end mb-3">
+          <div>
+            <label class="form-label mb-1">Buscar</label>
+            <input type="text" id="filtroTexto" class="form-control" placeholder="ID, cliente, dirección...">
+          </div>
+          <div>
+            <label class="form-label mb-1">Estado</label>
+            <select id="filtroEstado" class="form-select">
+              <option value="">Todos</option>
+              <option>Pendiente</option>
+              <option>En preparación</option>
+              <option>Listo</option>
+              <option>En camino</option>
+              <option>Entregado</option>
+              <option>Anulado</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label mb-1">Rango</label>
+            <select id="filtroRango" class="form-select">
+              <option value="all">Todos</option>
+              <option value="today">Hoy</option>
+              <option value="7d">Últimos 7 días</option>
+              <option value="30d">Últimos 30 días</option>
+            </select>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <button id="btnExport" class="btn btn-outline-secondary"><i class="bi bi-download me-1"></i>Exportar CSV</button>
+            <button id="btnRefrescar" class="btn btn-outline-primary"><i class="bi bi-arrow-clockwise me-1"></i>Refrescar</button>
+          </div>
+        </div>
+
+        <div class="table-responsive table-fixed" style="max-height: 60vh;">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Cliente</th>
+                <th>Dirección</th>
+                <th class="text-end">Total</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPedidos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Usuarios -->
+      <div class="tab-pane fade" id="pane-usuarios" role="tabpanel">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h5 class="m-0">Usuarios registrados</h5>
+          <div class="input-group" style="max-width:360px;">
+            <input id="adminNuevo" type="email" class="form-control" placeholder="correo@ejemplo.cl">
+            <button id="btnAddAdmin" class="btn btn-outline-secondary"><i class="bi bi-shield-lock"></i> Hacer admin</button>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="card">
+              <div class="card-header">Usuarios</div>
+              <div class="card-body p-0">
+                <table class="table m-0">
+                  <thead><tr><th>Email</th></tr></thead>
+                  <tbody id="tbodyUsuarios"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card">
+              <div class="card-header">Administradores</div>
+              <div class="card-body p-0">
+                <table class="table m-0">
+                  <thead><tr><th>Email</th><th class="text-end">Quitar</th></tr></thead>
+                  <tbody id="tbodyAdmins"></tbody>
+                </table>
+              </div>
+            </div>
+            <small class="text-muted d-block mt-2">La lista de administradores se guarda en <code>localStorage["rostiseria_admins"]</code>.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
+
+  <script src="TiempoSesion.js"></script>
+  <script>
+    // ---- Helpers UI ----
+    function showToast(msg,color='success'){
+      const c=document.getElementById('toast-container');
+      const t=document.createElement('div');
+      t.className=`toast align-items-center text-white bg-${color} border-0 mb-2`;
+      t.innerHTML=`<div class="d-flex"><div class="toast-body">${msg}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+      c.appendChild(t); new bootstrap.Toast(t).show(); t.addEventListener('hidden.bs.toast',()=>t.remove());
+    }
+    const money = n => '$' + (Number(n||0)).toLocaleString('es-CL');
+
+    // ---- Storage keys ----
+    const K_ORDERS = 'rostiseria_orders';
+    const K_USERS  = 'rostiseria_users';
+    const K_LOGGED = 'rostiseria_loggedUser';
+    const K_ADMINS = 'rostiseria_admins';
+
+    // ---- Seguridad básica por rol ----
+    let logged = localStorage.getItem(K_LOGGED)||'';
+    let admins = JSON.parse(localStorage.getItem(K_ADMINS)||'[]');
+    if(!admins.length){
+      admins = ['admin@sc.cl']; // semilla inicial, edítalo
+      localStorage.setItem(K_ADMINS, JSON.stringify(admins));
+    }
+    document.getElementById('adminEmail').textContent = logged || '(sin sesión)';
+    if(!logged || !admins.includes(logged)){
+      alert('Debes iniciar sesión con una cuenta de administrador.');
+      location.href = 'login.html';
+    }
+
+    // ---- Estado en memoria ----
+    let orders = JSON.parse(localStorage.getItem(K_ORDERS)||'[]');
+    let users  = JSON.parse(localStorage.getItem(K_USERS)||'[]');
+
+    // ---- KPI Dashboard ----
+    function isSameDay(a,b){ const A=new Date(a); const B=new Date(b); return A.getFullYear()===B.getFullYear() && A.getMonth()===B.getMonth() && A.getDate()===B.getDate(); }
+    function isWithinDays(a, days){ const A=new Date(a).getTime(); const now=Date.now(); return (now - A) <= days*24*60*60*1000; }
+
+    function computeKPIs(){
+      const valid = orders.filter(o => o.status !== 'Anulado');
+      const hoy = new Date();
+      const ventasHoy = valid.filter(o => isSameDay(o.createdAt, hoy))
+                             .reduce((s,o)=> s + (o.total||0), 0);
+      const pedidosHoy = valid.filter(o => isSameDay(o.createdAt, hoy)).length;
+
+      const mes = hoy.getMonth(), year = hoy.getFullYear();
+      const ventasMes = valid.filter(o => { const d=new Date(o.createdAt); return d.getMonth()===mes && d.getFullYear()===year; })
+                             .reduce((s,o)=> s + (o.total||0), 0);
+      const pedidosMes = valid.filter(o => { const d=new Date(o.createdAt); return d.getMonth()===mes && d.getFullYear()===year; }).length;
+
+      const ticket = valid.length ? (valid.reduce((s,o)=> s + (o.total||0), 0) / valid.length) : 0;
+      const pendientes = orders.filter(o => ['Pendiente','En preparación','Listo','En camino'].includes(o.status)).length;
+
+      document.getElementById('kpiVentasHoy').textContent = money(ventasHoy);
+      document.getElementById('kpiPedidosHoy').textContent = `${pedidosHoy} pedidos`;
+      document.getElementById('kpiVentasMes').textContent = money(ventasMes);
+      document.getElementById('kpiPedidosMes').textContent = `${pedidosMes} pedidos`;
+      document.getElementById('kpiTicket').textContent = money(ticket);
+      document.getElementById('kpiPendientes').textContent = pendientes;
+
+      // Top productos
+      const counter = {};
+      valid.forEach(o => (o.items||[]).forEach(it=>{
+        const key = it.name || it.nombre || 'Producto';
+        counter[key] = (counter[key]||0) + (it.quantity||1);
+      }));
+      const top = Object.entries(counter).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      const topEl = document.getElementById('topProductos');
+      topEl.innerHTML = top.length? '' : '<span class="text-muted">Sin datos</span>';
+      top.forEach(([name,count])=>{
+        const li=document.createElement('li'); li.textContent = `${name} — ${count}`;
+        topEl.appendChild(li);
+      });
+
+      // Estados
+      const estados = ['Pendiente','En preparación','Listo','En camino','Entregado','Anulado'];
+      const map = Object.fromEntries(estados.map(e=>[e,0]));
+      orders.forEach(o=>{ map[o.status] = (map[o.status]||0) + 1; });
+      const ul = document.getElementById('resumenEstados'); ul.innerHTML='';
+      estados.forEach(e=>{
+        const li=document.createElement('li'); li.className='list-group-item d-flex justify-content-between align-items-center';
+        const badgeClass = e==='Anulado' ? 'text-bg-danger' :
+                           e==='Entregado' ? 'text-bg-success' :
+                           e==='En camino' ? 'text-bg-info' : 'text-bg-secondary';
+        li.innerHTML = `<span>${e}</span> <span class="badge ${badgeClass}">${map[e]||0}</span>`;
+        ul.appendChild(li);
+      });
+    }
+
+    // ---- Pedidos: render y acciones ----
+    const ESTADOS = ['Pendiente','En preparación','Listo','En camino','Entregado','Anulado'];
+
+    function renderPedidos() {
+      const q = (document.getElementById('filtroTexto').value||'').toLowerCase();
+      const e = document.getElementById('filtroEstado').value || '';
+      const r = document.getElementById('filtroRango').value || 'all';
+
+      let list = [...orders];
+
+      // Rango
+      if(r==='today') list = list.filter(o => isSameDay(o.createdAt, new Date()));
+      if(r==='7d')    list = list.filter(o => isWithinDays(o.createdAt, 7));
+      if(r==='30d')   list = list.filter(o => isWithinDays(o.createdAt, 30));
+
+      // Estado
+      if(e) list = list.filter(o => (o.status||'').toLowerCase() === e.toLowerCase());
+
+      // Texto
+      if(q) list = list.filter(o =>
+        (o.id||'').toLowerCase().includes(q) ||
+        (o.name||'').toLowerCase().includes(q) ||
+        (o.address||'').toLowerCase().includes(q)
+      );
+
+      // Orden: recientes primero
+      list.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+
+      const tb = document.getElementById('tbodyPedidos');
+      tb.innerHTML = '';
+      if(!list.length){
+        tb.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">Sin pedidos para los filtros seleccionados</td></tr>`;
+        return;
+      }
+      list.forEach(o=>{
+        const tr=document.createElement('tr');
+        const badgeClass = o.status==='Anulado' ? 'text-bg-danger' :
+                           o.status==='Entregado' ? 'text-bg-success' :
+                           o.status==='En camino' ? 'text-bg-info' : 'text-bg-secondary';
+        tr.innerHTML = `
+          <td><code>${o.id||''}</code></td>
+          <td>${o.name||'-'}</td>
+          <td>${o.address||'-'}</td>
+          <td class="text-end">${money(o.total||0)}</td>
+          <td>${new Date(o.createdAt||Date.now()).toLocaleString()}</td>
+          <td><span class="badge status-badge ${badgeClass}">${o.status||'Pendiente'}</span></td>
+          <td class="text-end">
+            <div class="btn-group">
+              <a class="btn btn-sm btn-outline-secondary" href="GestionPedidos.html?id=${encodeURIComponent(o.id)}" title="Ver detalle">
+                <i class="bi bi-eye"></i>
+              </a>
+              <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" title="Cambiar estado"></button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                ${ESTADOS.map(s=>`<li><a class="dropdown-item change-state" data-id="${o.id}" data-state="${s}">${s}</a></li>`).join('')}
+              </ul>
+              <button class="btn btn-sm btn-outline-danger cancel-order" data-id="${o.id}" title="Anular"><i class="bi bi-x-circle"></i></button>
+            </div>
+          </td>`;
+        tb.appendChild(tr);
+      });
+    }
+
+    // ---- Usuarios / Admins ----
+    function renderUsuarios(){
+      const tbU = document.getElementById('tbodyUsuarios'); tbU.innerHTML='';
+      users.forEach(u=>{
+        const tr=document.createElement('tr'); tr.innerHTML = `<td>${u.email}</td>`;
+        tbU.appendChild(tr);
+      });
+
+      const tbA = document.getElementById('tbodyAdmins'); tbA.innerHTML='';
+      admins.forEach(a=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML = `<td>${a}</td>
+          <td class="text-end"><button class="btn btn-sm btn-outline-danger rm-admin" data-mail="${a}"><i class="bi bi-trash"></i></button></td>`;
+        tbA.appendChild(tr);
+      });
+    }
+
+    // ---- Export CSV ----
+    function exportCSV(){
+      const headers = ['id','cliente','direccion','total','status','createdAt'];
+      const rows = orders.map(o=>[
+        o.id,
+        (o.name||'').replaceAll(',',' '),
+        (o.address||'').replaceAll(',',' '),
+        o.total||0,
+        o.status||'',
+        new Date(o.createdAt||Date.now()).toISOString()
+      ]);
+      const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'pedidos.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // ---- Eventos ----
+    document.getElementById('btnRefrescar').addEventListener('click', ()=>{
+      orders = JSON.parse(localStorage.getItem(K_ORDERS)||'[]');
+      users  = JSON.parse(localStorage.getItem(K_USERS)||'[]');
+      computeKPIs(); renderPedidos(); renderUsuarios();
+      showToast('Datos refrescados','info');
+    });
+    document.getElementById('btnExport').addEventListener('click', exportCSV);
+
+    document.getElementById('filtroTexto').addEventListener('input', renderPedidos);
+    document.getElementById('filtroEstado').addEventListener('change', renderPedidos);
+    document.getElementById('filtroRango').addEventListener('change', renderPedidos);
+
+    // Cambiar estado pedido
+    document.getElementById('pane-pedidos').addEventListener('click', (e)=>{
+      const stateBtn = e.target.closest('.change-state');
+      const cancelBtn= e.target.closest('.cancel-order');
+      if(stateBtn){
+        const id = stateBtn.dataset.id;
+        const st = stateBtn.dataset.state;
+        const idx = orders.findIndex(o=>o.id===id);
+        if(idx>=0){
+          orders[idx].status = st;
+          localStorage.setItem(K_ORDERS, JSON.stringify(orders));
+          computeKPIs(); renderPedidos();
+          showToast(`Pedido ${id} → ${st}`,'primary');
+        }
+      }
+      if(cancelBtn){
+        const id = cancelBtn.dataset.id;
+        const idx = orders.findIndex(o=>o.id===id);
+        if(idx>=0){
+          if(confirm('¿Anular este pedido?')){
+            orders[idx].status = 'Anulado';
+            localStorage.setItem(K_ORDERS, JSON.stringify(orders));
+            computeKPIs(); renderPedidos();
+            showToast(`Pedido ${id} anulado`,'danger');
+          }
+        }
+      }
+    });
+
+    // Admins: agregar/quitar
+    document.getElementById('btnAddAdmin').addEventListener('click', ()=>{
+      const email = (document.getElementById('adminNuevo').value||'').trim().toLowerCase();
+      if(!email){ showToast('Ingresa un correo','danger'); return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Correo inválido','danger'); return; }
+      if(!users.some(u=>u.email===email)){ showToast('Ese correo no existe en usuarios','danger'); return; }
+      if(admins.includes(email)){ showToast('Ya es admin','info'); return; }
+      admins.push(email);
+      localStorage.setItem(K_ADMINS, JSON.stringify(admins));
+      renderUsuarios(); showToast('Administrador agregado');
+    });
+    document.getElementById('pane-usuarios').addEventListener('click', (e)=>{
+      const rm = e.target.closest('.rm-admin');
+      if(rm){
+        const mail = rm.dataset.mail;
+        if(mail===logged){ showToast('No puedes quitarte a ti mismo','danger'); return; }
+        admins = admins.filter(a=>a!==mail);
+        localStorage.setItem(K_ADMINS, JSON.stringify(admins));
+        renderUsuarios(); showToast('Administrador removido','warning');
+      }
+    });
+
+    // ---- Inicializar ----
+    computeKPIs(); renderPedidos(); renderUsuarios();
+  </script>
+</body>
+</html>
