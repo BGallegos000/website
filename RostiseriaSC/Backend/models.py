@@ -4,54 +4,55 @@ from pydantic import BaseModel, Field, EmailStr
 from bson import ObjectId
 import pytz
 
-CHILE_TIMEZONE = pytz.timezone('Chile/Continental')
+# Zona horaria de Chile
+CHILE_TIMEZONE = pytz.timezone("Chile/Continental")
 
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
 
-# --- Modelos ---
+# ------------------------
+#   MODELOS DE DOMINIO
+# ------------------------
 
-class Product(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    name: str = Field(..., min_length=3)
-    price: float = Field(..., gt=0)
+class ProductBase(BaseModel):
+    id: Optional[str] = Field(alias="_id", default=None)
+    name: str 
+    price: float 
     category: str
     description: str
     img_url: str
     active: bool = True
 
+class ProductCreate(ProductBase):
+    pass
+
+class Product(ProductBase):
+    id: str 
+
     class Config:
-        arbitrary_types_allowed = True
+        populate_by_name = True
         json_encoders = {ObjectId: str}
 
+
 class User(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[str] = Field(alias="_id", default=None)
     name: str
     email: EmailStr
     hashed_password: str
     is_admin: bool = False
 
     class Config:
-        arbitrary_types_allowed = True
+        populate_by_name = True
         json_encoders = {ObjectId: str}
 
+
 class OrderItem(BaseModel):
-    product_id: str 
+    product_id: str
     name: str
     price: float
     quantity: int
 
-class OrderStatus(str):
+
+# Estados del pedido (string normal para guardar en Mongo)
+class OrderStatus:
     PENDING = "Pendiente"
     PREPARING = "En preparación"
     READY = "Listo"
@@ -59,8 +60,9 @@ class OrderStatus(str):
     DELIVERED = "Entregado"
     CANCELED = "Anulado"
 
+
 class Order(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[str] = Field(alias="_id", default=None)
     user_email: Optional[EmailStr] = None
     customer_name: str
     phone: str
@@ -69,19 +71,28 @@ class Order(BaseModel):
     total: float
     status: str = OrderStatus.PENDING
     created_at: datetime = Field(default_factory=lambda: datetime.now(CHILE_TIMEZONE))
-    cancel_until: datetime = Field(default_factory=lambda: datetime.now(CHILE_TIMEZONE) + timedelta(minutes=10))
+    cancel_until: datetime = Field(
+        default_factory=lambda: datetime.now(CHILE_TIMEZONE) + timedelta(minutes=10)
+    )
 
     class Config:
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str, datetime: lambda dt: dt.isoformat()}
+        populate_by_name = True
+        json_encoders = {
+            ObjectId: str,
+            datetime: lambda dt: dt.isoformat(),
+        }
+
 
 class ContactMessage(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[str] = Field(alias="_id", default=None)
     name: str
     email: EmailStr
     message: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(CHILE_TIMEZONE))
-    
+
     class Config:
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str, datetime: lambda dt: dt.isoformat()}
+        populate_by_name = True
+        json_encoders = {
+            ObjectId: str,
+            datetime: lambda dt: dt.isoformat(),
+        }

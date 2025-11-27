@@ -2,6 +2,7 @@
 (function () {
   const INACTIVITY_MS = 30 * 60 * 1000; // 30 min
   const SKEY = 'rostiseria_session';
+  
   const now = Date.now();
 
   try {

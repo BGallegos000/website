@@ -1,56 +1,77 @@
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import List, Optional, Annotated
+# routes/products.py
+from typing import List, Optional
+
+from fastapi import APIRouter, HTTPException, Query
 from bson import ObjectId
-from pydantic import BaseModel
 
-from database import get_collection
-from models import Product
-from routes.auth import get_current_admin_user, User
+from database import get_products_collection
+from models import Product, ProductCreate  # ajusta si tus nombres son distintos
 
-router = APIRouter(prefix="/products", tags=["Products"])
+router = APIRouter(
+    prefix="/products",      # Quedará /products/... desde main.py sin prefix extra
+    tags=["products"],
+)
 
-class ProductUpdate(BaseModel):
-    name: Optional[str] = None
-    price: Optional[float] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    img_url: Optional[str] = None
-    active: Optional[bool] = None
 
 @router.get("/", response_model=List[Product])
-async def get_products(category: str = None, search: str = None):
-    query = {"active": True}
-    if category: query["category"] = category
-    if search:
-        query["$or"] = [
-            {"name": {"$regex": search, "$options": "i"}},
-            {"description": {"$regex": search, "$options": "i"}}
-        ]
-    return await get_collection("products").find(query).to_list(100)
+async def list_products(
+    category: Optional[str] = Query(None, description="Filtrar por categoría exacta"),
+    search: Optional[str] = Query(None, description="Texto a buscar en el nombre"),
+):
+    """
+    Lista productos desde MongoDB.
 
-@router.get("/admin/list", response_model=List[Product])
-async def get_all_products_admin(admin: Annotated[User, Depends(get_current_admin_user)]):
-    return await get_collection("products").find().to_list(100)
+    - `category`: filtra por categoría exacta (ej: 'Pollo').
+    - `search`: busca texto parcial en el nombre (case-insensitive).
+    """
+    coll = get_products_collection()
+
+    query: dict = {"active": True}
+
+    if category:
+        query["category"] = category
+
+    if search:
+        # Búsqueda por nombre, sin distinguir mayúsculas/minúsculas
+        query["name"] = {"$regex": search, "$options": "i"}
+
+    cursor = coll.find(query)
+    products: list[Product] = []
+    async for doc in cursor:
+        # Convertimos ObjectId a str para que Pydantic no se queje
+        doc["id"] = str(doc["_id"])
+        products.append(Product(**doc))
+
+    return products
+
+
+@router.get("/{product_id}", response_model=Product)
+async def get_product(product_id: str):
+    """Obtiene un producto por su _id de Mongo."""
+    coll = get_products_collection()
+
+    if not ObjectId.is_valid(product_id):
+        raise HTTPException(status_code=400, detail="ID inválido")
+
+    doc = await coll.find_one({"_id": ObjectId(product_id)})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+    doc["id"] = str(doc["_id"])
+    return Product(**doc)
+
 
 @router.post("/", response_model=Product, status_code=201)
-async def create_product(product: Product, admin: Annotated[User, Depends(get_current_admin_user)]):
-    new_prod = product.model_dump(by_alias=True, exclude={'id'})
-    res = await get_collection("products").insert_one(new_prod)
-    created = await get_collection("products").find_one({"_id": res.inserted_id})
-    return Product(**created)
+async def create_product(product_in: ProductCreate):
+    """Crea un producto nuevo en MongoDB."""
+    coll = get_products_collection()
 
-@router.put("/{id}", response_model=Product)
-async def update_product(id: str, p_in: ProductUpdate, admin: Annotated[User, Depends(get_current_admin_user)]):
-    if not ObjectId.is_valid(id): raise HTTPException(400, "ID inválido")
-    data = {k:v for k,v in p_in.model_dump(exclude_unset=True).items() if v is not None}
-    
-    await get_collection("products").update_one({"_id": ObjectId(id)}, {"$set": data})
-    updated = await get_collection("products").find_one({"_id": ObjectId(id)})
-    if not updated: raise HTTPException(404, "Producto no encontrado")
-    return Product(**updated)
+    data = product_in.model_dump()
+    res = await coll.insert_one(data)
+    doc = await coll.find_one({"_id": res.inserted_id})
 
-@router.delete("/{id}", status_code=204)
-async def delete_product(id: str, admin: Annotated[User, Depends(get_current_admin_user)]):
-    if not ObjectId.is_valid(id): raise HTTPException(400, "ID inválido")
-    res = await get_collection("products").delete_one({"_id": ObjectId(id)})
-    if res.deleted_count == 0: raise HTTPException(404, "Producto no encontrado")
+    if not doc:
+        raise HTTPException(status_code=500, detail="Error al crear el producto")
+
+    doc["id"] = str(doc["_id"])
+    return Product(**doc)

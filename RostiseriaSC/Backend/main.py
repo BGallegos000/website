@@ -1,36 +1,31 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import uvicorn
-import os
 
-from database import db_client
-from routes import auth, products, orders, contact
+from database import init_db, close_db
+from routes.auth import router as auth_router
+from routes.products import router as products_router
+from routes.orders import router as orders_router
+from routes.contact import router as contact_router
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await db_client.connect()
-    yield
-    await db_client.close()
-
-app = FastAPI(title="Rostiseria API", lifespan=lifespan)
+app = FastAPI(title="Rostisería Sabores Caseros API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(products.router)
-app.include_router(orders.router)
-app.include_router(contact.router)
+@app.on_event("startup")
+async def startup_event():
+    await init_db()
 
-@app.get("/")
-def root():
-    return {"msg": "API Rostiseria Online"}
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_db()
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+app.include_router(auth_router, prefix="/auth")
+app.include_router(products_router)          # <--- SIN prefix extra
+app.include_router(orders_router, prefix="/orders")
+app.include_router(contact_router, prefix="/contact")

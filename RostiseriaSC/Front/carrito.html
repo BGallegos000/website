@@ -1,200 +1,184 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carrito - Rostisería SC</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="DiseñoPag.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Rostisería Sabores Caseros - Carrito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="DiseñoPag.css">
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-danger">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
+        <a class="navbar-brand fw-bold" href="index.html">Sabores Caseros</a>
+        <a href="catalogo.html" class="btn btn-outline-light">Seguir comprando</a>
     </div>
-  </nav>
+</nav>
 
-  <div class="container py-5">
-    <h2 class="fw-bold mb-4">Tu Carrito de Compras</h2>
-
-    <div id="cart-items" class="mb-3">
-      <!-- Items renderizados aquí -->
-    </div>
-
-    <div class="border-top pt-3 mb-3">
-      <div class="d-flex justify-content-between mb-2"><span>Subtotal:</span><span id="subtotal">$0</span></div>
-      <div class="d-flex justify-content-between mb-2"><span>Envío:</span><span id="envio">$0</span></div>
-      <div class="d-flex justify-content-between fw-bold fs-5"><span>Total:</span><span id="total">$0</span></div>
-    </div>
-
-    <button class="btn btn-danger mt-2 w-100" id="checkout">Finalizar Compra</button>
-    <button class="btn btn-outline-secondary mt-2 w-100" id="clear-cart">Vaciar Carrito</button>
-  </div>
-
-  <!-- Toast container -->
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
-
-  <script src="TiempoSesion.js"></script>
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Helpers
-    const toastContainer = document.getElementById('toast-container');
-    function showToast(msg, color='success') {
-      const t = document.createElement('div');
-      t.className = `toast align-items-center text-white bg-${color} border-0 mb-2`;
-      t.setAttribute('role','alert');
-      t.innerHTML = `<div class="d-flex">
-        <div class="toast-body">${msg}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>`;
-      toastContainer.appendChild(t);
-      const bs = new bootstrap.Toast(t);
-      bs.show();
-      t.addEventListener('hidden.bs.toast', () => t.remove());
-    }
-
-    // Estado del carrito
-    let cart = JSON.parse(localStorage.getItem('rostiseria_cart') || '[]');
-    const cartItemsEl = document.getElementById('cart-items');
-    const subtotalEl = document.getElementById('subtotal');
-    const envioEl = document.getElementById('envio');
-    const totalEl = document.getElementById('total');
-    const checkoutBtn = document.getElementById('checkout');
-    const clearBtn = document.getElementById('clear-cart');
-
-    function money(n){ return '$' + (n||0).toLocaleString(); }
-
-    function renderCart() {
-      cartItemsEl.innerHTML = '';
-      if (!cart || cart.length === 0) {
-        cartItemsEl.innerHTML = '<p class="text-muted">Tu carrito está vacío</p>';
-        checkoutBtn.disabled = true;
-        clearBtn.disabled = true;
-      } else {
-        checkoutBtn.disabled = false;
-        clearBtn.disabled = false;
-        cart.forEach((item, idx) => {
-          const itemWrap = document.createElement('div');
-          itemWrap.className = 'd-flex align-items-center justify-content-between border-bottom py-2';
-          itemWrap.innerHTML = `
-            <div class="d-flex align-items-center" style="gap:12px;">
-              <img src="${item.img || item.image || 'imagenes/pollo-asado.jpg'}" alt="${item.name}" style="width:70px; height:70px; object-fit:cover; border-radius:6px;">
-              <div>
-                <div class="fw-bold">${item.name}</div>
-                <div class="text-muted small">$${(item.price || item.price === 0 ? item.price : 0).toLocaleString()}</div>
-              </div>
+<div class="container my-4">
+    <h2 class="mb-3">Carrito de compras</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table table-striped" id="tablaCarrito">
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cant.</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <p id="mensajeVacio" class="text-muted"></p>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Datos del pedido</h5>
+                    <form id="formPedido">
+                        <div class="mb-2">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreCliente" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="emailCliente" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="fonoCliente" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="direccionCliente" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Nota</label>
+                            <textarea class="form-control" id="notaCliente" rows="2"></textarea>
+                        </div>
+                        <hr>
+                        <p class="fw-bold">Total: <span id="totalCarrito">$0</span></p>
+                        <button type="submit" class="btn btn-danger w-100">Confirmar pedido</button>
+                    </form>
+                </div>
             </div>
+            <div id="toastContainer" class="mt-3"></div>
+        </div>
+    </div>
+</div>
 
-            <div class="d-flex align-items-center" style="gap:12px;">
-              <div class="input-group input-group-sm" style="width:120px;">
-                <button class="btn btn-outline-secondary btn-decrease" data-idx="${idx}" type="button">-</button>
-                <input type="text" class="form-control text-center quantity-input" value="${item.quantity || 1}" data-idx="${idx}" readonly>
-                <button class="btn btn-outline-secondary btn-increase" data-idx="${idx}" type="button">+</button>
-              </div>
-              <div class="fw-bold">$${((item.price || 0) * (item.quantity || 1)).toLocaleString()}</div>
-              <button class="btn btn-sm btn-outline-danger btn-remove" data-idx="${idx}" title="Eliminar"><i class="bi bi-trash"></i></button>
-            </div>
-          `;
-          cartItemsEl.appendChild(itemWrap);
-        });
-      }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api_utils.js"></script>
 
-      // Totales
-      const subtotal = (cart||[]).reduce((s,i)=> s + ((i.price||0) * (i.quantity||1)), 0);
-      const envio = subtotal > 0 ? 0 : 0; // envío fijo 0 en demo
-      const total = subtotal + envio;
-      subtotalEl.textContent = money(subtotal);
-      envioEl.textContent = money(envio);
-      totalEl.textContent = money(total);
+<script>
+    const K_ORDERS = "rostiseria_orders"; // para compatibilidad local
 
-      localStorage.setItem('rostiseria_cart', JSON.stringify(cart));
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.querySelector("#tablaCarrito tbody");
+        const totalSpan = document.getElementById("totalCarrito");
+        const mensajeVacio = document.getElementById("mensajeVacio");
+        const formPedido = document.getElementById("formPedido");
 
-    // Delegación de eventos
-    cartItemsEl.addEventListener('click', (e) => {
-      const incBtn = e.target.closest('.btn-increase');
-      const decBtn = e.target.closest('.btn-decrease');
-      const remBtn = e.target.closest('.btn-remove');
+        let cart = getCart();
 
-      if (incBtn) {
-        const idx = Number(incBtn.dataset.idx);
-        cart[idx].quantity = (cart[idx].quantity || 1) + 1;
-        renderCart();
-        showToast(`Cantidad de "${cart[idx].name}" aumentada`);
-        return;
-      }
+        function renderCarrito() {
+            tbody.innerHTML = "";
+            if (!cart.length) {
+                mensajeVacio.textContent = "Tu carrito está vacío.";
+                totalSpan.textContent = "$0";
+                return;
+            }
+            mensajeVacio.textContent = "";
 
-      if (decBtn) {
-        const idx = Number(decBtn.dataset.idx);
-        cart[idx].quantity = (cart[idx].quantity || 1) - 1;
-        if (cart[idx].quantity <= 0) {
-          const removed = cart.splice(idx, 1);
-          showToast(`"${removed[0].name}" eliminado del carrito`, 'warning');
-        } else {
-          showToast(`Cantidad de "${cart[idx].name}" disminuida`);
+            let total = 0;
+            cart.forEach((item, idx) => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${item.nombre}</td>
+                    <td>${item.cantidad}</td>
+                    <td>$${item.precio.toLocaleString("es-CL")}</td>
+                    <td>$${subtotal.toLocaleString("es-CL")}</td>
+                    <td><button class="btn btn-sm btn-outline-danger btn-remove">X</button></td>
+                `;
+                tr.querySelector(".btn-remove").addEventListener("click", () => {
+                    cart.splice(idx, 1);
+                    saveCart(cart);
+                    renderCarrito();
+                });
+                tbody.appendChild(tr);
+            });
+            totalSpan.textContent = "$" + total.toLocaleString("es-CL");
         }
-        renderCart();
-        return;
-      }
 
-      if (remBtn) {
-        const idx = Number(remBtn.dataset.idx);
-        const removed = cart.splice(idx, 1);
-        renderCart();
-        showToast(`"${removed[0].name}" eliminado del carrito`, 'warning');
-        return;
-      }
+        renderCarrito();
+
+        // 🔗 Envío del pedido a /orders (y también lo guardamos localmente)
+        formPedido.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!cart.length) {
+                showToast("El carrito está vacío", "danger");
+                return;
+            }
+
+            const nombre = document.getElementById("nombreCliente").value.trim();
+            const email = document.getElementById("emailCliente").value.trim();
+            const telefono = document.getElementById("fonoCliente").value.trim();
+            const direccion = document.getElementById("direccionCliente").value.trim();
+            const nota = document.getElementById("notaCliente").value.trim();
+
+            const total = cart.reduce((acc, it) => acc + it.precio * it.cantidad, 0);
+
+            // Estructura base del pedido (compatible con la UI actual)
+            const pedido = {
+                id: Date.now().toString(),
+                clienteNombre: nombre,
+                clienteEmail: email,
+                telefono,
+                direccion,
+                nota,
+                total,
+                estado: "Pendiente",
+                fecha: new Date().toISOString(),
+                items: cart.map(it => ({
+                    productoId: it.id,
+                    nombre: it.nombre,
+                    cantidad: it.cantidad,
+                    precio: it.precio
+                }))
+            };
+
+            // Guarda en localStorage para que GestiónPedidos.html siga funcionando
+            const raw = localStorage.getItem(K_ORDERS);
+            const orders = raw ? JSON.parse(raw) : [];
+            orders.push(pedido);
+            localStorage.setItem(K_ORDERS, JSON.stringify(orders));
+
+            // 🔗 Intentar enviar también al backend
+            try {
+                await apiFetch("/orders", "POST", {
+                    customer_name: nombre,
+                    email,
+                    phone: telefono,
+                    address: direccion,
+                    note: nota,
+                    items: pedido.items,
+                    total
+                }, false); // si tu endpoint requiere auth, cambia a true
+            } catch (err) {
+                console.warn("Error al guardar pedido en backend:", err);
+            }
+
+            showToast("Pedido enviado correctamente", "success");
+            clearCart();
+            cart = [];
+            renderCarrito();
+            formPedido.reset();
+        });
     });
-
-    // Checkout por prompts (sin alterar la UI existente)
-    checkoutBtn.addEventListener('click', () => {
-      if (!cart || cart.length === 0) { showToast('Tu carrito está vacío','danger'); return; }
-
-      const name = (prompt('Nombre y apellido:')||'').trim();
-      if(!name){ showToast('Compra cancelada','warning'); return; }
-
-      const phone = (prompt('Teléfono de contacto:')||'').trim();
-      if(!phone){ showToast('Compra cancelada','warning'); return; }
-
-      const address = (prompt('Dirección de entrega (debe incluir "Santiago"):')||'').trim();
-      if(!/santiago/i.test(address)){ showToast('Dirección fuera de cobertura (solo Santiago).','danger'); return; }
-
-      // Crear pedido
-      const totalValue = cart.reduce((s,i)=> s + ((i.price||0) * (i.quantity||1)), 0);
-      const order = {
-        id: 'ORD-' + Date.now(),
-        name, phone, address,
-        items: cart,
-        total: totalValue,
-        status: 'Pendiente',
-        createdAt: Date.now(),
-        cancelUntil: Date.now() + 10*60*1000, // 10 min para anulación
-        emailConfirmSent: true
-      };
-      const orders = JSON.parse(localStorage.getItem('rostiseria_orders')||'[]');
-      orders.push(order);
-      localStorage.setItem('rostiseria_orders', JSON.stringify(orders));
-
-      // Vaciar carrito y redirigir
-      cart = [];
-      renderCart();
-      showToast('Pago Webpay simulado exitoso. ¡Gracias por tu compra!','info');
-      setTimeout(()=>{ window.location.href = 'GestionPedidos.html?id='+encodeURIComponent(order.id); }, 600);
-    });
-
-    // Vaciar carrito
-    clearBtn.addEventListener('click', () => {
-      if (!cart || cart.length === 0) { showToast('Carrito ya vacío','info'); return; }
-      cart = [];
-      renderCart();
-      showToast('Carrito vaciado', 'warning');
-    });
-
-    // Inicializar
-    renderCart();
-  });
-  </script>
+</script>
 </body>
 </html>
