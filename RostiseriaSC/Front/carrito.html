@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="DiseñoPag.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="index.html">Sabores Caseros</a>
+        <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
         <a href="catalogo.html" class="btn btn-outline-light">Seguir comprando</a>
     </div>
 </nav>
@@ -73,13 +73,15 @@
 <script src="api_utils.js"></script>
 
 <script>
-    const K_ORDERS = "rostiseria_orders"; // para compatibilidad local
-
     document.addEventListener("DOMContentLoaded", () => {
         const tbody = document.querySelector("#tablaCarrito tbody");
         const totalSpan = document.getElementById("totalCarrito");
         const mensajeVacio = document.getElementById("mensajeVacio");
         const formPedido = document.getElementById("formPedido");
+
+        // Autocompletar usuario si existe
+        const logged = getLoggedUser();
+        if(logged) document.getElementById("emailCliente").value = logged.email;
 
         let cart = getCart();
 
@@ -94,16 +96,24 @@
 
             let total = 0;
             cart.forEach((item, idx) => {
-                const subtotal = item.precio * item.cantidad;
+                // CORRECCIÓN: Normalizamos los nombres de propiedades
+                const precio = parseFloat(item.price || item.precio || 0);
+                const cantidad = parseInt(item.quantity || item.cantidad || 1);
+                
+                // Evitamos NaN si algo viene mal
+                const subtotal = precio * cantidad;
                 total += subtotal;
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.nombre}</td>
-                    <td>${item.cantidad}</td>
-                    <td>$${item.precio.toLocaleString("es-CL")}</td>
+                    <td>${item.name || item.nombre}</td>
+                    <td>${cantidad}</td> 
+                    <td>$${precio.toLocaleString("es-CL")}</td>
                     <td>$${subtotal.toLocaleString("es-CL")}</td>
                     <td><button class="btn btn-sm btn-outline-danger btn-remove">X</button></td>
                 `;
+                
+                // Botón eliminar
                 tr.querySelector(".btn-remove").addEventListener("click", () => {
                     cart.splice(idx, 1);
                     saveCart(cart);
@@ -116,67 +126,58 @@
 
         renderCarrito();
 
-        // 🔗 Envío del pedido a /orders (y también lo guardamos localmente)
         formPedido.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (!cart.length) {
-                showToast("El carrito está vacío", "danger");
+                showToast("El carrito está vacío", "warning");
                 return;
             }
 
+            // Recolectar datos del formulario
             const nombre = document.getElementById("nombreCliente").value.trim();
             const email = document.getElementById("emailCliente").value.trim();
             const telefono = document.getElementById("fonoCliente").value.trim();
             const direccion = document.getElementById("direccionCliente").value.trim();
             const nota = document.getElementById("notaCliente").value.trim();
 
-            const total = cart.reduce((acc, it) => acc + it.precio * it.cantidad, 0);
+            // Calcular total seguro
+            let totalSeguro = 0;
+            
+            // MAPEO PARA EL BACKEND (Vital para evitar el error 422)
+            const itemsBackend = cart.map(it => {
+                const p = parseFloat(it.price || it.precio || 0);
+                const q = parseInt(it.quantity || it.cantidad || 1);
+                totalSeguro += p * q;
 
-            // Estructura base del pedido (compatible con la UI actual)
-            const pedido = {
-                id: Date.now().toString(),
-                clienteNombre: nombre,
-                clienteEmail: email,
-                telefono,
-                direccion,
-                nota,
-                total,
-                estado: "Pendiente",
-                fecha: new Date().toISOString(),
-                items: cart.map(it => ({
-                    productoId: it.id,
-                    nombre: it.nombre,
-                    cantidad: it.cantidad,
-                    precio: it.precio
-                }))
-            };
+                return {
+                    productoId: it.id || it._id, // Backend espera "productoId" (alias en models.py)
+                    nombre: it.name || it.nombre,
+                    precio: p,
+                    cantidad: q
+                };
+            });
 
-            // Guarda en localStorage para que GestiónPedidos.html siga funcionando
-            const raw = localStorage.getItem(K_ORDERS);
-            const orders = raw ? JSON.parse(raw) : [];
-            orders.push(pedido);
-            localStorage.setItem(K_ORDERS, JSON.stringify(orders));
-
-            // 🔗 Intentar enviar también al backend
             try {
-                await apiFetch("/orders", "POST", {
+                console.log("Enviando pedido...", { items: itemsBackend, total: totalSeguro });
+                
+                const data = await apiFetch("/orders", "POST", {
                     customer_name: nombre,
-                    email,
+                    email: email,
                     phone: telefono,
                     address: direccion,
                     note: nota,
-                    items: pedido.items,
-                    total
-                }, false); // si tu endpoint requiere auth, cambia a true
-            } catch (err) {
-                console.warn("Error al guardar pedido en backend:", err);
-            }
+                    items: itemsBackend,
+                    total: totalSeguro
+                });
 
-            showToast("Pedido enviado correctamente", "success");
-            clearCart();
-            cart = [];
-            renderCarrito();
-            formPedido.reset();
+                showToast(`Pedido creado con éxito! ID: ${data._id}`, "success");
+                clearCart();
+                setTimeout(() => window.location.href = "index.html", 2500);
+
+            } catch (err) {
+                console.error("Error al enviar pedido:", err);
+                showToast("Error: " + err.message, "danger");
+            }
         });
     });
 </script>

@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <title>Rostisería Sabores Caseros - Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap / estilos existentes -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="DiseñoPag.css">
 </head>
 <body class="bg-light">
-    <!-- Navbar (igual que antes) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-error">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">Sabores Caseros</a>
+            <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
         </div>
     </nav>
 
-    <!-- Contenedor principal -->
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
@@ -24,7 +21,6 @@
                     <div class="card-body">
                         <h3 class="card-title text-center mb-4">Iniciar sesión</h3>
 
-                        <!-- Formulario Login -->
                         <form id="formLogin">
                             <div class="mb-3">
                                 <label for="loginEmail" class="form-label">Correo electrónico</label>
@@ -34,7 +30,7 @@
                                 <label for="loginPassword" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="loginPassword" required>
                             </div>
-                            <button type="enviar" class="btn btn-error w-100">Ingresar</button>
+                            <button type="submit" class="btn btn-danger w-100">Ingresar</button>
                         </form>
 
                         <hr class="my-4">
@@ -46,7 +42,6 @@
                         </button>
 
                         <div id="registroCollapse" class="collapse">
-                            <!-- Formulario Registro -->
                             <form id="formRegister" class="mt-3">
                                 <div class="mb-2">
                                     <label for="regNombre" class="form-label">Nombre</label>
@@ -64,7 +59,7 @@
                                     <label for="regPassword2" class="form-label">Repite la contraseña</label>
                                     <input type="password" class="form-control" id="regPassword2" required>
                                 </div>
-                                <button type="enviar" class="btn btn-error w-100">Crear cuenta</button>
+                                <button type="submit" class="btn btn-danger w-100">Crear cuenta</button>
                             </form>
                         </div>
 
@@ -76,22 +71,16 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script de tiempo de sesión existente -->
     <script src="TiempoSesion.js"></script>
-
-    <!-- Utilidades de conexión a API -->
     <script src="api_utils.js"></script>
 
-    <!-- Lógica de login/registro conectada al backend -->
     <script>
-        // Validaciones básicas de email/contraseña (cliente)
         function isValidEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
         function isValidPassword(pwd) {
-            return pwd.length >= 6; // ajusta según reglas
+            return pwd.length >= 6;
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -100,101 +89,99 @@
             const loginEmail = document.getElementById("loginEmail");
             const loginPassword = document.getElementById("loginPassword");
 
-            // Si ya estoy logueado, redirigir
+            // Redirigir si ya está logueado
             const logged = getLoggedUser();
             if (logged) {
-                if (logged.isAdmin) {
-                    window.location.href = "admin.html";
-                } else {
-                    window.location.href = "index.html";
-                }
+                window.location.href = logged.isAdmin ? "admin.html" : "index.html";
                 return;
             }
 
-            // 🔗 LOGIN contra /auth/login
-            formLogin.addEventListener("enviar", async (e) => {
-                e.preventDefault();
+            // --- MANEJO DE LOGIN ---
+            formLogin.addEventListener("submit", async (e) => {
+                e.preventDefault(); // Detiene la recarga de la página
+                
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value.trim();
 
                 if (!isValidEmail(email)) {
-                    showToast("Correo inválido", "error");
+                    showToast("Correo inválido", "danger");
                     return;
                 }
-                if (!isValidPassword(password)) {
-                    showToast("La contraseña debe tener al menos 6 caracteres", "error");
+                if (!password) {
+                    showToast("Ingresa tu contraseña", "danger");
                     return;
                 }
 
                 try {
-                    const data = await apiFetch(
-                        "/auth/login",
-                        "POST",
-                        { email, password },
-                        false // no requiere token
-                    );
-                    // Se asume que el backend responde con: { access_token, token_type, user_email, is_admin }
+                    // Petición al Backend
+                    const data = await apiFetch("/auth/login", "POST", { email, password });
+                    
+                    // Guardar sesión
                     saveAuth(data.access_token, data.user_email, data.is_admin);
-                    showToast(`Bienvenido ${data.user_email}`, "listo");
+                    showToast(`¡Bienvenido ${data.user_email}!`, "success");
 
-                    // Redirigir segun rol
+                    // Redirección
                     setTimeout(() => {
-                        if (data.is_admin) {
-                            window.location.href = "admin.html";
-                        } else {
-                            window.location.href = "index.html";
-                        }
-                    }, 800);
+                        window.location.href = data.is_admin ? "admin.html" : "index.html";
+                    }, 1000);
+
                 } catch (err) {
                     console.error(err);
-                    showToast(err.message || "Error al iniciar sesión", "error");
+                    showToast(err.message || "Error al iniciar sesión", "danger");
                 }
             });
 
-            // 🔗 REGISTRO contra /auth/register
-            formRegister.addEventListener("enviar", async (e) => {
-                e.preventDefault();
+            // --- MANEJO DE REGISTRO ---
+            formRegister.addEventListener("submit", async (e) => {
+                e.preventDefault(); // Detiene la recarga de la página
+
                 const nombre = document.getElementById("regNombre").value.trim();
                 const email = document.getElementById("regEmail").value.trim();
                 const pwd1 = document.getElementById("regPassword").value;
                 const pwd2 = document.getElementById("regPassword2").value;
 
-                if (!nombre) {
-                    showToast("Debes ingresar un nombre", "error");
+                if (!nombre || !email || !pwd1) {
+                    showToast("Completa todos los campos", "danger");
                     return;
                 }
                 if (!isValidEmail(email)) {
-                    showToast("Correo inválido", "error");
+                    showToast("Correo inválido", "danger");
                     return;
                 }
                 if (!isValidPassword(pwd1)) {
-                    showToast("La contraseña debe tener al menos 6 caracteres", "error");
+                    showToast("La contraseña debe tener al menos 6 caracteres", "danger");
                     return;
                 }
                 if (pwd1 !== pwd2) {
-                    showToast("Las contraseñas no coinciden", "error");
+                    showToast("Las contraseñas no coinciden", "danger");
                     return;
                 }
 
                 try {
-                    // Se asume model UserCreate: { name, email, password }
+                    // Petición al Backend
                     await apiFetch("/auth/register", "POST", {
                         name: nombre,
-                        email,
+                        email: email,
                         password: pwd1,
                     });
 
-                    showToast("Cuenta creada. Ahora puedes iniciar sesión.", "listo");
-                    // Opcional: rellenar campos de login automaticamente
+                    showToast("Cuenta creada con éxito. Ingresando...", "success");
+
+                    // Autollenar login para facilitar ingreso
                     loginEmail.value = email;
                     loginPassword.value = pwd1;
+                    
+                    // Cerrar el acordeón de registro
+                    const collapseEl = document.getElementById('registroCollapse');
+                    const bsCollapse = new bootstrap.Collapse(collapseEl, { toggle: false });
+                    bsCollapse.hide();
+
                 } catch (err) {
                     console.error(err);
-                    showToast(err.message || "Error al registrar usuario", "error");
+                    showToast(err.message || "Error al registrar usuario", "danger");
                 }
             });
         });
     </script>
 </body>
 </html>
-

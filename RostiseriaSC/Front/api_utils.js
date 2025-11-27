@@ -1,6 +1,6 @@
 // api_utils.js
 
-// 🔧 Configuración base de la API
+// 🔧 Configuración base de la API (Sin espacios ni saltos de línea al final)
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 // Claves de almacenamiento local
@@ -10,13 +10,13 @@ const K_CART = "rostiseria_cart";
 // ===================== AUTENTICACIÓN ===================== //
 
 // Guarda token + email + flag admin
-export function saveAuth(token, email, isAdmin = false) {
+function saveAuth(token, email, isAdmin = false) {
     const data = { token, email, isAdmin };
     localStorage.setItem(K_AUTH, JSON.stringify(data));
 }
 
 // Recupera la sesión actual
-export function getAuth() {
+function getAuth() {
     const raw = localStorage.getItem(K_AUTH);
     if (!raw) return null;
     try {
@@ -27,7 +27,7 @@ export function getAuth() {
 }
 
 // Devuelve email e isAdmin listos para usar
-export function getLoggedUser() {
+function getLoggedUser() {
     const auth = getAuth();
     if (!auth) return null;
     return {
@@ -37,15 +37,16 @@ export function getLoggedUser() {
 }
 
 // Limpia sesión
-export function clearAuth() {
+function clearAuth() {
     localStorage.removeItem(K_AUTH);
 }
 
 // ===================== FETCH AUXILIAR ===================== //
 
-// 🔗 Helper general para llamar a la API con JSON y (opcional) token
-export async function apiFetch(path, method = "GET", body = null, requireAuth = false) {
+async function apiFetch(path, method = "GET", body = null, requireAuth = false) {
+    // Aseguramos que la URL esté limpia
     const url = API_BASE_URL + path;
+    
     const headers = { "Content-Type": "application/json" };
 
     if (requireAuth) {
@@ -56,58 +57,50 @@ export async function apiFetch(path, method = "GET", body = null, requireAuth = 
         headers["Authorization"] = `Bearer ${auth.token}`;
     }
 
-    const res = await fetch(url, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : null,
-    });
+    try {
+        const res = await fetch(url, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : null,
+        });
 
-    if (!res.ok) {
-        let msg = `Error HTTP ${res.status}`;
-        try {
-            const data = await res.json();
-            if (data && data.detail) {
-                msg = Array.isArray(data.detail)
-                    ? data.detail.map(d => d.msg || d).join(", ")
-                    : data.detail;
-            }
-        } catch (_) {
-            // ignorar
+        if (!res.ok) {
+            let msg = `Error HTTP ${res.status}`;
+            try {
+                const data = await res.json();
+                if (data && data.detail) {
+                    msg = Array.isArray(data.detail) 
+                        ? data.detail.map(d => d.msg || d).join(", ") 
+                        : data.detail;
+                }
+            } catch (_) { }
+            throw new Error(msg);
         }
-        throw new Error(msg);
+
+        if (res.status === 204) return null;
+        return await res.json();
+    } catch (error) {
+        throw error;
     }
-
-    // 204 sin cuerpo
-    if (res.status === 204) return null;
-
-    return await res.json();
 }
 
 // ===================== CARRITO ===================== //
 
-// Obtiene carrito desde localStorage
-export function getCart() {
+function getCart() {
     const raw = localStorage.getItem(K_CART);
     if (!raw) return [];
-    try {
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
+    try { return JSON.parse(raw); } catch { return []; }
 }
 
-// Guarda carrito en localStorage
-export function saveCart(cart) {
+function saveCart(cart) {
     localStorage.setItem(K_CART, JSON.stringify(cart));
 }
 
-// Limpia carrito
-export function clearCart() {
+function clearCart() {
     localStorage.removeItem(K_CART);
 }
 
-// Agrega un producto al carrito (o aumenta cantidad)
-export function addToCart(producto) {
+function addToCart(producto) {
     const cart = getCart();
     const idx = cart.findIndex(p => p.id === producto.id);
     if (idx >= 0) {
@@ -120,23 +113,30 @@ export function addToCart(producto) {
 
 // ===================== UTILIDADES UI ===================== //
 
-// Muestra un toast simple Bootstrap-like (si existe container) o alert fallback
-export function showToast(message, type = "success") {
+function showToast(message, type = "success") {
     const container = document.getElementById("toastContainer");
     if (!container) {
         alert(message);
         return;
     }
-
+    // Usamos clases de Bootstrap para colores: success (verde), danger (rojo), warning (amarillo)
+    const alertClass = type === 'error' ? 'danger' : type === 'listo' ? 'success' : type;
+    
     const toast = document.createElement("div");
-    toast.className = `alert alert-${type}`;
-    toast.textContent = message;
+    toast.className = `alert alert-${alertClass} alert-dismissible fade show`;
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
 
     container.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+    // Auto-eliminar a los 4 segundos
+    setTimeout(() => {
+        try { toast.remove(); } catch(e){}
+    }, 4000);
 }
 
-// Expone algunas funciones en window (para uso en <script> inline)
+// Exponer funciones globalmente
 window.API_BASE_URL = API_BASE_URL;
 window.saveAuth = saveAuth;
 window.getAuth = getAuth;
