@@ -8,19 +8,51 @@
   <link rel="stylesheet" href="DiseñoPag.css">
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+
+  <nav class="navbar navbar-expand navbar-custom sticky-top">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
-          <li class="nav-item"><a class="nav-link active" href="nosotros.html">Nosotros</a></li>
-          <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
-          <li class="nav-item"><a class="nav-link" href="login.html">Iniciar Sesión</a></li>
-          <li class="nav-item"><a class="nav-link" href="carrito.html">Carrito <span class="badge bg-danger" id="mini-cart-count">0</span></a></li>
-        </ul>
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-fire text-warning me-2"></i>Rostisería SC
+      </a>
+
+      <div class="d-flex align-items-center ms-auto">
+        
+        <div class="d-none d-md-flex align-items-center me-3">
+            <a class="nav-link mx-2" href="index.html">Inicio</a>
+            <a class="nav-link mx-2" href="catalogo.html">Catálogo</a>
+            <span id="navLoginContainer">
+                <a class="nav-link mx-2" href="login.html">Ingresar</a>
+            </span>
+        </div>
+
+        <a class="btn position-relative me-3 text-light" href="carrito.html">
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">
+                0
+            </span>
+        </a>
+
+        <div class="dropdown">
+            <button class="btn btn-outline-light border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                <li class="d-md-none"><a class="dropdown-item" href="catalogo.html">Ir al Catálogo</a></li>
+                <li class="d-md-none"><a class="dropdown-item" href="login.html" id="mobileLoginLink">Iniciar Sesión</a></li>
+                <li class="d-md-none"><hr class="dropdown-divider"></li>
+                
+                <li><a class="dropdown-item" href="nosotros.html"><i class="bi bi-people me-2"></i>Nosotros</a></li>
+                <li><a class="dropdown-item" href="contacto.html"><i class="bi bi-envelope me-2"></i>Contacto</a></li>
+                
+                <li id="navAdminItem" class="d-none">
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item text-warning fw-bold" href="admin.html">
+                        <i class="bi bi-speedometer2 me-2"></i>Panel Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
+
       </div>
     </div>
   </nav>

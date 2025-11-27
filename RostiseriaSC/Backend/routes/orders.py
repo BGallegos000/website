@@ -1,23 +1,29 @@
-# routes/orders.py
-from fastapi import APIRouter, HTTPException, Query, Body
+from fastapi import APIRouter, HTTPException, Query, Body, Depends
 from typing import List, Optional
 from bson import ObjectId
-from models import Order, OrderItem
+from models import Order, OrderItem, OrderStatus
 from database import get_collection
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
-# Schema específico para recibir el JSON de carrito.html
+# --- SCHEMAS DE ENTRADA ---
+
+# Schema para recibir el pedido desde el carrito
 class OrderCreate(BaseModel):
     customer_name: str
     email: str
     phone: str
     address: str
     note: Optional[str] = ""
-    # El front envía items con claves en español, el modelo OrderItem lo maneja
     items: List[OrderItem] 
     total: float
+
+# Schema para actualizar el estado (SOLUCIÓN DEL ERROR)
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+# --- ENDPOINTS ---
 
 @router.post("/", response_model=Order, status_code=201)
 async def create_order(order_in: OrderCreate):
@@ -40,7 +46,7 @@ async def create_order(order_in: OrderCreate):
     
     return Order(**created)
 
-# Endpoint para GestionPedidos.html (Búsqueda por email)
+# Endpoint para obtener pedidos (Búsqueda por email o todos)
 @router.get("/", response_model=List[Order])
 async def get_orders(email: Optional[str] = Query(None)):
     query = {}
@@ -55,7 +61,7 @@ async def get_orders(email: Optional[str] = Query(None)):
         results.append(Order(**doc))
     return results
 
-# Endpoint para GestionPedidos.html (Búsqueda por ID)
+# Endpoint para obtener un solo pedido por ID
 @router.get("/{order_id}", response_model=Order)
 async def get_order_by_id(order_id: str):
     coll = get_collection("orders")
@@ -68,3 +74,37 @@ async def get_order_by_id(order_id: str):
     if not doc:
         raise HTTPException(404, "Pedido no encontrado")
     return Order(**doc)
+
+# --- ENDPOINT NUEVO: CAMBIAR ESTADO (CORREGIDO) ---
+@router.patch("/{order_id}/status", response_model=Order)
+async def update_order_status(order_id: str, status_update: OrderStatusUpdate):
+    coll = get_collection("orders")
+    
+    if not ObjectId.is_valid(order_id):
+        raise HTTPException(400, "ID inválido")
+        
+    # Validar que el estado sea correcto
+    valid_statuses = [
+        OrderStatus.PENDING, 
+        OrderStatus.PREPARING, 
+        OrderStatus.READY, 
+        OrderStatus.EN_CAMINO, 
+        OrderStatus.DELIVERED, 
+        OrderStatus.CANCELED
+    ]
+    
+    if status_update.status not in valid_statuses:
+        raise HTTPException(400, f"Estado no permitido. Opciones: {valid_statuses}")
+
+    # Actualizar en base de datos
+    result = await coll.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {"status": status_update.status}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(404, "Pedido no encontrado")
+        
+    # Devolver el pedido actualizado
+    updated_doc = await coll.find_one({"_id": ObjectId(order_id)})
+    return Order(**updated_doc)
