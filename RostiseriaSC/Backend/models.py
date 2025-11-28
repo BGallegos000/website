@@ -70,9 +70,6 @@ class Order(BaseModel):
     class Config:
         populate_by_name = True
         json_encoders = {datetime: lambda dt: dt.isoformat()}
-        
-        
-# ... (Todo lo anterior igual) ...
 
 class Order(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
@@ -90,7 +87,6 @@ class Order(BaseModel):
         populate_by_name = True
         json_encoders = {datetime: lambda dt: dt.isoformat()}
 
-# --- NUEVO MODELO PARA CONTACTO ---
 class ContactMessage(BaseModel):
     name: str
     email: EmailStr

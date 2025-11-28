@@ -129,7 +129,7 @@
     // 1. Verificación de Seguridad
     const user = getLoggedUser();
     if (!user || !user.isAdmin) {
-        alert("⛔ Acceso denegado.");
+        alert("Acceso denegado.");
         window.location.href = "login.html";
     } else {
         document.getElementById("adminEmail").textContent = user.email;

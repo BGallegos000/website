@@ -6,7 +6,6 @@
   --text-main:     #2d2d2d;
 }
 
-/* SOLUCIÓN FOOTER PEGAJOSO */
 body {
   background-color: var(--brand-light);
   color: var(--text-main);

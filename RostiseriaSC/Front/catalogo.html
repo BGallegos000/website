@@ -39,7 +39,21 @@
       <h2 class="section-title text-center">Nuestro Catálogo</h2>
       <div class="row mb-4 g-2">
         <div class="col-md-4"><input type="text" id="searchInput" class="form-control" placeholder="Buscar..."></div>
-        <div class="col-md-4"><select id="categoryFilter" class="form-select"><option value="">Todas</option><option value="Pollo">Pollo</option><option value="Carne">Carne</option><option value="Ensaladas">Ensaladas</option></select></div>
+        <div class="col-md-4">
+          <select id="categoryFilter" class="form-select">
+            <option value="">Todas las categorías</option>
+            <option value="Pollo">Pollo</option>
+            <option value="Carne">Carne</option>
+            <option value="Masas">Masas</option>
+            <option value="Platos">Platos</option>
+            <option value="Mariscos">Mariscos</option>
+            <option value="Ensaladas">Ensaladas</option>
+            <option value="Acompañamientos">Acompañamientos</option>
+            <option value="Sándwiches">Sándwiches</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Postres">Postres</option>
+          </select>
+        </div>
         <div class="col-md-4"><button id="clearFilters" class="btn btn-secondary w-100">Limpiar</button></div>
       </div>
       <div id="productList" class="row g-4"></div>
