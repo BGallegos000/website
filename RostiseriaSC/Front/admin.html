@@ -3,17 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Panel Administrador - Rostisería SC</title>
+  <title>Admin - Rostisería SC</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="DiseñoPag.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <nav class="navbar navbar-expand navbar-custom sticky-top">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
-      <div class="d-flex align-items-center text-white">
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-fire text-warning me-2"></i>Rostisería SC
+      </a>
+      <div class="d-flex align-items-center text-white ms-auto">
          <span class="me-2 d-none d-md-inline">Admin:</span>
          <span id="adminEmail" class="fw-bold text-warning">...</span>
          <button onclick="logout()" class="btn btn-sm btn-outline-light ms-3">
@@ -23,17 +25,18 @@
     </div>
   </nav>
 
-  <div class="container py-4">
+  <section class="container py-4">
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold m-0">Dashboard de Gestión</h2>
-        <button onclick="exportarExcel()" class="btn btn-success">
-            <i class="bi bi-file-earmark-excel"></i> Exportar Reporte
+        <h2 class="section-title m-0">Dashboard de Gestión</h2>
+        <button onclick="exportarExcel()" class="btn btn-success text-white fw-bold">
+            <i class="bi bi-file-earmark-excel me-2"></i>Exportar Reporte
         </button>
     </div>
 
-    <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4 border-0">
         <div class="card-body">
-            <h5 class="card-title mb-3">Filtros de Reporte</h5>
+            <h5 class="card-title mb-3 text-muted">Filtros de Reporte</h5>
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label">Fecha Inicio</label>
@@ -44,8 +47,8 @@
                     <input type="date" id="fechaFin" class="form-control">
                 </div>
                 <div class="col-md-4">
-                    <button onclick="aplicarFiltros()" class="btn btn-primary w-100">
-                        <i class="bi bi-funnel"></i> Filtrar Resultados
+                    <button onclick="aplicarFiltros()" class="btn btn-primary-custom w-100">
+                        <i class="bi bi-funnel me-2"></i>Filtrar Resultados
                     </button>
                 </div>
             </div>
@@ -54,20 +57,20 @@
 
     <div class="row g-3 mb-4">
       <div class="col-md-4">
-        <div class="card p-3 shadow-sm border-start border-4 border-primary">
-          <div class="text-muted small">Ventas Totales</div>
+        <div class="card p-3 shadow-sm border-start border-4 border-primary h-100">
+          <div class="text-muted small text-uppercase fw-bold">Ventas Totales</div>
           <div class="display-6 fw-bold text-primary" id="kpiVentas">$0</div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card p-3 shadow-sm border-start border-4 border-success">
-          <div class="text-muted small">Total Pedidos</div>
+        <div class="card p-3 shadow-sm border-start border-4 border-success h-100">
+          <div class="text-muted small text-uppercase fw-bold">Total Pedidos</div>
           <div class="display-6 fw-bold text-success" id="kpiPedidos">0</div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card p-3 shadow-sm border-start border-4 border-warning">
-          <div class="text-muted small">Ticket Promedio</div>
+        <div class="card p-3 shadow-sm border-start border-4 border-warning h-100">
+          <div class="text-muted small text-uppercase fw-bold">Ticket Promedio</div>
           <div class="display-6 fw-bold text-warning" id="kpiTicket">$0</div>
         </div>
       </div>
@@ -75,25 +78,26 @@
 
     <div class="row g-3">
         <div class="col-lg-8">
-            <div class="card shadow-sm h-100">
+            <div class="card shadow-sm h-100 border-0">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0 fw-bold"><i class="bi bi-table me-2"></i>Historial de Pedidos</h5>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-hover align-middle mb-0" id="tablaExportar">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                            <th>ID</th>
-                            <th>Fecha</th>
-                            <th>Cliente</th>
-                            <th>Estado</th>
-                            <th class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaPedidos">
-                            <tr><td colspan="5" class="text-center p-5 text-muted">Cargando...</td></tr>
-                        </tbody>
+                    <div class="table-responsive" style="max-height: 400px;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPedidos">
+                                <tr><td colspan="6" class="text-center p-5 text-muted">Cargando datos...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -101,35 +105,28 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card shadow-sm h-100">
+            <div class="card shadow-sm h-100 border-0">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-trophy me-2"></i>Top Productos</h5>
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-trophy me-2 text-warning"></i>Top Productos</h5>
                 </div>
-                <div class="card-body">
-                    <div id="topProductosList">
-                        <p class="text-muted text-center">Sin datos</p>
-                    </div>
+                <div class="card-body p-4" id="topProductosList">
+                    <p class="text-center text-muted">Sin datos</p>
                 </div>
             </div>
         </div>
     </div>
-  </div>
+
+  </section>
+
+  <footer class="footer-section text-center">
+    <div class="container"><p class="mb-0">&copy; 2025 Rostisería SC</p></div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api_utils.js"></script>
   
   <script>
-    // --- CONFIGURACIÓN ---
-    const ESTADOS = {
-        "Pendiente": "bg-warning text-dark",
-        "En preparación": "bg-info text-dark",
-        "Listo": "bg-primary",
-        "En camino": "bg-secondary",
-        "Entregado": "bg-success",
-        "Anulado": "bg-danger"
-    };
-
-    // --- AUTENTICACIÓN ---
+    // 1. Verificación de Seguridad
     const user = getLoggedUser();
     if (!user || !user.isAdmin) {
         alert("⛔ Acceso denegado.");
@@ -146,38 +143,48 @@
 
     let todosLosPedidos = [];
 
-    // --- CARGA DE DATOS ---
+    // 2. Carga de Datos desde API
     async function cargarDatos() {
         try {
             todosLosPedidos = await apiFetch("/orders", "GET");
-            renderizarTabla(todosLosPedidos);
-            calcularKPIs(todosLosPedidos);
-            // (Opcional) calcularTopProductos(todosLosPedidos);
+            actualizarDashboard(todosLosPedidos);
         } catch (err) {
             console.error(err);
-            alert("Error: " + err.message);
+            alert("Error cargando datos: " + err.message);
         }
     }
 
-    // --- RENDERIZADO DE TABLA CON SELECTOR (B-12) ---
+    // 3. Renderizado General
+    function actualizarDashboard(lista) {
+        renderizarTabla(lista);
+        calcularKPIs(lista);
+        calcularTopProductos(lista);
+    }
+
+    // Tabla con Selector de Estado (B-12)
     function renderizarTabla(lista) {
         const tbody = document.getElementById("tablaPedidos");
         tbody.innerHTML = "";
 
         if (lista.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4">No hay pedidos.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center p-5 text-muted">No se encontraron pedidos.</td></tr>`;
             return;
         }
 
         lista.forEach(p => {
             const fecha = new Date(p.created_at).toLocaleString("es-CL");
             
-            // Creamos las opciones del select dinámicamente
+            // Selector dinámico
             let opciones = "";
-            for (const [estado, clase] of Object.entries(ESTADOS)) {
-                const selected = p.status === estado ? "selected" : "";
-                opciones += `<option value="${estado}" ${selected}>${estado}</option>`;
-            }
+            ["Pendiente","En preparación","Listo","En camino","Entregado","Anulado"].forEach(est => {
+                const selected = p.status === est ? "selected" : "";
+                opciones += `<option value="${est}" ${selected}>${est}</option>`;
+            });
+
+            // Color del borde del select según estado
+            let bordeClase = "border-secondary";
+            if(p.status==="Pendiente") bordeClase="border-warning";
+            if(p.status==="Entregado") bordeClase="border-success";
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -185,81 +192,122 @@
                 <td>${fecha}</td>
                 <td>
                     <div class="fw-bold">${p.customer_name}</div>
-                    <div class="small text-muted">${p.address}</div>
+                    <div class="small text-muted" style="font-size:0.8rem">${p.user_email}</div>
                 </td>
                 <td>
-                    <select class="form-select form-select-sm fw-bold text-white" 
-                            style="background-color: var(--bs-${obtenerColorBootstrap(p.status)})"
-                            onchange="cambiarEstado('${p._id}', this)">
+                    <select class="form-select form-select-sm fw-semibold ${bordeClase}" 
+                            onchange="cambiarEstado('${p._id}', this)"
+                            data-prev="${p.status}">
                         ${opciones}
                     </select>
                 </td>
-                <td class="text-end fw-bold">$${p.total.toLocaleString("es-CL")}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="verDetalle('${p._id}')">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </td>
+                <td class="text-end fw-bold text-nowrap">$${p.total.toLocaleString("es-CL")}</td>
+                <td><button class="btn btn-sm text-secondary"><i class="bi bi-eye"></i></button></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // --- LÓGICA DE CAMBIO DE ESTADO (B-12) ---
-    async function cambiarEstado(idPedido, selectElement) {
-        const nuevoEstado = selectElement.value;
-        const estadoAnterior = selectElement.getAttribute("data-prev") || nuevoEstado;
-
-        // Confirmación simple (UI/UX B-12)
+    // Lógica para cambiar estado (PATCH)
+    async function cambiarEstado(id, selectEl) {
+        const nuevoEstado = selectEl.value;
         if(!confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
-            selectElement.value = estadoAnterior; // Revertir si cancela
+            selectEl.value = selectEl.getAttribute("data-prev");
             return;
         }
 
         try {
-            // Llamada a la API (PATCH)
-            await apiFetch(`/orders/${idPedido}/status`, "PATCH", { status: nuevoEstado });
-            
-            // Feedback visual inmediato
-            selectElement.style.backgroundColor = `var(--bs-${obtenerColorBootstrap(nuevoEstado)})`;
-            
-            // Actualizar KPIs (por si el estado afecta conteos)
-            const pedido = todosLosPedidos.find(p => p._id === idPedido);
+            await apiFetch(`/orders/${id}/status`, "PATCH", { status: nuevoEstado });
+            // Actualizar dato local para que los filtros funcionen sin recargar todo
+            const pedido = todosLosPedidos.find(p => p._id === id);
             if(pedido) pedido.status = nuevoEstado;
-            calcularKPIs(todosLosPedidos);
-
+            
             alert("Estado actualizado correctamente");
-
-        } catch (err) {
-            console.error(err);
-            alert("Error al actualizar: " + err.message);
-            // Recargar tabla para corregir visualmente
-            cargarDatos(); 
+            actualizarDashboard(todosLosPedidos); // Re-renderizar para actualizar colores/KPIs
+        } catch(e) {
+            alert("Error: " + e.message);
+            selectEl.value = selectEl.getAttribute("data-prev");
         }
     }
 
-    // Helper para colores
-    function obtenerColorBootstrap(estado) {
-        if(estado === "Pendiente") return "warning";
-        if(estado === "En preparación") return "info";
-        if(estado === "Listo") return "primary";
-        if(estado === "En camino") return "secondary";
-        if(estado === "Entregado") return "success";
-        if(estado === "Anulado") return "danger";
-        return "secondary";
-    }
-
-    // --- KPIs (Igual que antes) ---
+    // KPIs
     function calcularKPIs(lista) {
         const totalVentas = lista.reduce((sum, p) => sum + (p.total || 0), 0);
+        const ticketPromedio = lista.length ? (totalVentas / lista.length) : 0;
+
         document.getElementById("kpiVentas").textContent = "$" + totalVentas.toLocaleString("es-CL");
         document.getElementById("kpiPedidos").textContent = lista.length;
-        const ticket = lista.length ? totalVentas/lista.length : 0;
-        document.getElementById("kpiTicket").textContent = "$" + Math.round(ticket).toLocaleString("es-CL");
+        document.getElementById("kpiTicket").textContent = "$" + Math.round(ticketPromedio).toLocaleString("es-CL");
     }
-    
-    function exportarExcel() { /* ... tu código anterior ... */ }
-    function aplicarFiltros() { /* ... tu código anterior ... */ }
+
+    // Top Productos
+    function calcularTopProductos(lista) {
+        const conteo = {};
+        lista.forEach(p => {
+            if(p.items) {
+                p.items.forEach(i => {
+                    const nombre = i.name || i.nombre || "Item";
+                    conteo[nombre] = (conteo[nombre] || 0) + (i.quantity || i.cantidad || 1);
+                });
+            }
+        });
+
+        const ranking = Object.entries(conteo).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const div = document.getElementById("topProductosList");
+        div.innerHTML = "";
+
+        if(ranking.length === 0) {
+            div.innerHTML = '<p class="text-center text-muted py-4">Sin datos de ventas</p>';
+            return;
+        }
+
+        const maxVal = ranking[0][1];
+        ranking.forEach(([nom, cant]) => {
+            const porc = (cant / maxVal) * 100;
+            div.innerHTML += `
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span class="fw-bold">${nom}</span>
+                        <span>${cant} un.</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-warning" style="width: ${porc}%"></div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Filtros de Fecha
+    function aplicarFiltros() {
+        const inicio = document.getElementById("fechaInicio").value;
+        const fin = document.getElementById("fechaFin").value;
+
+        if(!inicio && !fin) return actualizarDashboard(todosLosPedidos);
+
+        const filtrados = todosLosPedidos.filter(p => {
+            const fechaP = p.created_at.split('T')[0];
+            return (!inicio || fechaP >= inicio) && (!fin || fechaP <= fin);
+        });
+        actualizarDashboard(filtrados);
+    }
+
+    // Exportar Excel (CSV)
+    function exportarExcel() {
+        let csv = "ID,Fecha,Cliente,Email,Telefono,Direccion,Total,Estado\n";
+        todosLosPedidos.forEach(p => {
+            csv += `${p._id},${p.created_at},"${p.customer_name}",${p.user_email},${p.phone},"${p.address}",${p.total},${p.status}\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "reporte_ventas.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
   </script>
 </body>
 </html>

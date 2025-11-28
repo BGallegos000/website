@@ -1,155 +1,73 @@
-/* ==========================================================================
-   Rostisería SC – Nuevo Tema Visual "Gourmet"
-   ========================================================================== */
-
 :root {
-  /* Paleta Gastronómica */
-  --brand-primary: #bf360c;   /* Rojo óxido intenso */
-  --brand-dark:    #3e2723;   /* Café oscuro */
-  --brand-accent:  #ffb300;   /* Dorado */
-  --brand-light:   #fff3e0;   /* Crema suave */
+  --brand-primary: #bf360c;
+  --brand-dark:    #3e2723;
+  --brand-accent:  #ffb300;
+  --brand-light:   #fff3e0;
   --text-main:     #2d2d2d;
-  --text-light:    #f5f5f5;
 }
 
+/* SOLUCIÓN FOOTER PEGAJOSO */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--brand-light);
   color: var(--text-main);
-}
-
-/* --- Navbar Estilizado --- */
-.navbar-custom {
-  background-color: var(--brand-dark) !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  padding: 0.8rem 1rem;
-}
-
-.navbar-brand {
-  font-weight: 700;
-  color: var(--brand-accent) !important;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.nav-link {
-  color: rgba(255,255,255,0.85) !important;
-  transition: color 0.3s;
-  font-weight: 500;
-}
-
-.nav-link:hover, .nav-link.active {
-  color: var(--brand-accent) !important;
-}
-
-/* Dropdown del Menú Hamburguesa */
-.dropdown-menu {
-  background-color: var(--brand-dark);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.dropdown-item {
-  color: rgba(255,255,255,0.8);
-}
-.dropdown-item:hover {
-  background-color: rgba(255,255,255,0.1);
-  color: var(--brand-accent);
-}
-
-/* --- Hero Banner (Imagen de Fondo) --- */
-.hero-section {
-  position: relative;
-  /* Imagen de fondo de alta calidad (Pollo asado/Fuego) */
-  background: url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?q=80&w=2576&auto=format&fit=crop') no-repeat center center;
-  background-size: cover;
-  height: 85vh; /* Ocupa casi toda la pantalla */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  
+  /* Flexbox para empujar el footer */
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-align: center;
+  flex-direction: column;
+  min-height: 100vh; 
 }
 
-/* Capa oscura sobre la imagen para leer el texto */
-.hero-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
-  z-index: 1;
+/* El contenido principal empuja al footer */
+section, .container {
+  flex: 1; /* Ocupa el espacio disponible */
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 800px;
-  padding: 20px;
+/* Ajuste específico para que el contenido no se estire de más en algunas secciones */
+.hero-section, footer {
+  flex: 0 0 auto; /* No crecer */
 }
 
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-  margin-bottom: 1rem;
-}
+/* Navbar */
+.navbar-custom { background-color: var(--brand-dark) !important; padding: 0.8rem 1rem; }
+.navbar-brand { color: var(--brand-accent) !important; font-weight: 700; letter-spacing: 1px; }
+.nav-link { color: rgba(255,255,255,0.85) !important; transition: 0.3s; }
+.nav-link:hover, .nav-link.active { color: var(--brand-accent) !important; }
+.dropdown-menu { background-color: var(--brand-dark); border: 1px solid rgba(255,255,255,0.1); }
+.dropdown-item { color: rgba(255,255,255,0.8); }
+.dropdown-item:hover { background-color: rgba(255,255,255,0.1); color: var(--brand-accent); }
 
-.hero-subtitle {
-  font-size: 1.5rem;
-  font-weight: 300;
-  margin-bottom: 2rem;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+/* Hero */
+.hero-section {
+  background: url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=1920') no-repeat center;
+  background-size: cover; height: 75vh; display: flex; align-items: center; justify-content: center;
+  color: white; text-align: center; position: relative;
 }
+.hero-overlay { position: absolute; top:0; bottom:0; left:0; right:0; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)); }
+.hero-content { position: relative; z-index: 2; }
+.hero-title { font-size: 3.5rem; font-weight: 800; text-shadow: 2px 2px 8px black; }
 
-/* --- Botones --- */
+/* Botones */
 .btn-primary-custom {
-  background-color: var(--brand-primary);
-  border: none;
-  padding: 12px 30px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 50px;
-  transition: transform 0.2s, background 0.3s;
+  background-color: var(--brand-primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 600;
 }
-
-.btn-primary-custom:hover {
-  background-color: #a02e0a; /* Más oscuro al pasar mouse */
-  transform: translateY(-2px);
-  color: white;
-}
+.btn-primary-custom:hover { background-color: #a02e0a; color: white; transform: translateY(-2px); }
 
 .btn-outline-custom {
-  border: 2px solid var(--brand-accent);
-  color: var(--brand-accent);
-  padding: 10px 28px;
-  font-weight: 600;
-  border-radius: 50px;
-  background: transparent;
+  border: 2px solid var(--brand-accent); color: var(--brand-accent); padding: 10px 28px; border-radius: 50px; font-weight: 600; background: transparent;
 }
+.btn-outline-custom:hover { background-color: var(--brand-accent); color: var(--brand-dark); }
 
-.btn-outline-custom:hover {
-  background-color: var(--brand-accent);
-  color: var(--brand-dark);
-}
-
-/* --- Cards y Carrusel --- */
-.section-title {
-  color: var(--brand-primary);
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 2rem;
-  position: relative;
-  display: inline-block;
-}
-.section-title::after {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 3px;
-  background: var(--brand-accent);
-  margin: 10px auto 0;
-}
-
+/* Footer */
 .footer-section {
   background-color: var(--brand-dark);
   color: rgba(255,255,255,0.6);
+  padding: 20px 0;
+  margin-top: auto; /* Empuja hacia abajo si sobra espacio */
   border-top: 4px solid var(--brand-primary);
 }
+
+.section-title {
+    color: var(--brand-primary); font-weight: 700; margin-bottom: 2rem; position: relative; display: inline-block;
+}
+.section-title::after { content: ''; display: block; width: 60px; height: 3px; background: var(--brand-accent); margin: 10px auto 0; }

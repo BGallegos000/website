@@ -1,184 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Rostisería Sabores Caseros - Carrito</title>
+    <meta charset="utf-8"/><title>Carrito</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="DiseñoPag.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+<nav class="navbar navbar-expand navbar-custom sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="index.html">Rostisería SC</a>
-        <a href="catalogo.html" class="btn btn-outline-light">Seguir comprando</a>
+      <a class="navbar-brand" href="index.html"><i class="bi bi-fire text-warning me-2"></i>Rostisería SC</a>
+      <div class="d-flex align-items-center ms-auto">
+        <div class="d-none d-md-flex align-items-center me-3">
+            <a class="nav-link mx-2" href="index.html">Inicio</a>
+            <a class="nav-link mx-2" href="catalogo.html">Catálogo</a>
+            <span id="navLoginContainer"><a class="nav-link mx-2" href="login.html">Ingresar</a></span>
+        </div>
+        <a class="btn position-relative me-3 text-light" href="carrito.html">
+            <i class="bi bi-cart3 fs-5"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-outline-light border-0" data-bs-toggle="dropdown"><i class="bi bi-list fs-4"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                <li class="d-md-none"><a class="dropdown-item" href="catalogo.html">Ir al Catálogo</a></li>
+                <li class="d-md-none"><a class="dropdown-item" href="login.html" id="mobileLoginLink">Ingresar</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="nosotros.html">Nosotros</a></li>
+                <li><a class="dropdown-item" href="contacto.html">Contacto</a></li>
+                <li id="navAdminItem" class="d-none"><hr class="dropdown-divider"><a class="dropdown-item text-warning fw-bold" href="admin.html">Panel Admin</a></li>
+            </ul>
+        </div>
+      </div>
     </div>
 </nav>
 
-<div class="container my-4">
-    <h2 class="mb-3">Carrito de compras</h2>
+<section class="container my-5">
+    <h2 class="section-title">Tu Pedido</h2>
     <div class="row">
         <div class="col-md-8">
-            <table class="table table-striped" id="tablaCarrito">
-                <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Cant.</th>
-                    <th>Precio</th>
-                    <th>Subtotal</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <p id="mensajeVacio" class="text-muted"></p>
+            <div class="card shadow-sm border-0"><div class="card-body">
+                <table class="table align-middle"><thead class="table-light"><tr><th>Producto</th><th>Cant</th><th>Precio</th><th>Subtotal</th><th></th></tr></thead><tbody id="cartTable"></tbody></table>
+                <p id="msgEmpty" class="text-center text-muted my-3"></p>
+            </div></div>
         </div>
         <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Datos del pedido</h5>
-                    <form id="formPedido">
-                        <div class="mb-2">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombreCliente" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="emailCliente" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="fonoCliente" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="direccionCliente" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Nota</label>
-                            <textarea class="form-control" id="notaCliente" rows="2"></textarea>
-                        </div>
-                        <hr>
-                        <p class="fw-bold">Total: <span id="totalCarrito">$0</span></p>
-                        <button type="submit" class="btn btn-danger w-100">Confirmar pedido</button>
-                    </form>
-                </div>
+            <div class="card shadow-sm border-0 p-3">
+                <h4 class="mb-3">Datos de Envío</h4>
+                <form id="orderForm">
+                    <input class="form-control mb-2" id="cName" placeholder="Nombre" required>
+                    <input class="form-control mb-2" id="cEmail" placeholder="Email" type="email" required>
+                    <input class="form-control mb-2" id="cPhone" placeholder="Teléfono" required>
+                    <input class="form-control mb-2" id="cAddr" placeholder="Dirección" required>
+                    <textarea class="form-control mb-3" id="cNote" placeholder="Notas"></textarea>
+                    <div class="d-flex justify-content-between mb-3 fw-bold fs-5"><span>Total:</span><span id="cTotal" class="text-primary">$0</span></div>
+                    <button class="btn btn-primary-custom w-100">Confirmar Pedido</button>
+                </form>
             </div>
-            <div id="toastContainer" class="mt-3"></div>
         </div>
     </div>
-</div>
+</section>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="footer-section text-center"><p class="mb-0">&copy; 2025 Rostisería SC</p></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="api_utils.js"></script>
-
+<script src="TiempoSesion.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const tbody = document.querySelector("#tablaCarrito tbody");
-        const totalSpan = document.getElementById("totalCarrito");
-        const mensajeVacio = document.getElementById("mensajeVacio");
-        const formPedido = document.getElementById("formPedido");
-
-        // Autocompletar usuario si existe
-        const logged = getLoggedUser();
-        if(logged) document.getElementById("emailCliente").value = logged.email;
-
         let cart = getCart();
-
-        function renderCarrito() {
-            tbody.innerHTML = "";
-            if (!cart.length) {
-                mensajeVacio.textContent = "Tu carrito está vacío.";
-                totalSpan.textContent = "$0";
-                return;
-            }
-            mensajeVacio.textContent = "";
-
-            let total = 0;
-            cart.forEach((item, idx) => {
-                // CORRECCIÓN: Normalizamos los nombres de propiedades
-                const precio = parseFloat(item.price || item.precio || 0);
-                const cantidad = parseInt(item.quantity || item.cantidad || 1);
-                
-                // Evitamos NaN si algo viene mal
-                const subtotal = precio * cantidad;
-                total += subtotal;
-
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${item.name || item.nombre}</td>
-                    <td>${cantidad}</td> 
-                    <td>$${precio.toLocaleString("es-CL")}</td>
-                    <td>$${subtotal.toLocaleString("es-CL")}</td>
-                    <td><button class="btn btn-sm btn-outline-danger btn-remove">X</button></td>
-                `;
-                
-                // Botón eliminar
-                tr.querySelector(".btn-remove").addEventListener("click", () => {
-                    cart.splice(idx, 1);
-                    saveCart(cart);
-                    renderCarrito();
-                });
-                tbody.appendChild(tr);
-            });
-            totalSpan.textContent = "$" + total.toLocaleString("es-CL");
+        const update = () => { document.getElementById('mini-cart-count').textContent=cart.reduce((s,i)=>s+(i.quantity||1),0); }; update();
+        const user = getLoggedUser();
+        if(user) { 
+            if(user.isAdmin) document.getElementById("navAdminItem").classList.remove("d-none");
+            document.getElementById("navLoginContainer").innerHTML=`<a class="nav-link mx-2 text-warning" href="#" onclick="clearAuth();window.location.reload()">Salir</a>`;
+            if(document.getElementById("mobileLoginLink")) document.getElementById("mobileLoginLink").onclick=()=>{clearAuth();window.location.reload()};
+            document.getElementById("cEmail").value = user.email;
         }
 
-        renderCarrito();
-
-        formPedido.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            if (!cart.length) {
-                showToast("El carrito está vacío", "warning");
-                return;
-            }
-
-            // Recolectar datos del formulario
-            const nombre = document.getElementById("nombreCliente").value.trim();
-            const email = document.getElementById("emailCliente").value.trim();
-            const telefono = document.getElementById("fonoCliente").value.trim();
-            const direccion = document.getElementById("direccionCliente").value.trim();
-            const nota = document.getElementById("notaCliente").value.trim();
-
-            // Calcular total seguro
-            let totalSeguro = 0;
-            
-            // MAPEO PARA EL BACKEND (Vital para evitar el error 422)
-            const itemsBackend = cart.map(it => {
-                const p = parseFloat(it.price || it.precio || 0);
-                const q = parseInt(it.quantity || it.cantidad || 1);
-                totalSeguro += p * q;
-
-                return {
-                    productoId: it.id || it._id, // Backend espera "productoId" (alias en models.py)
-                    nombre: it.name || it.nombre,
-                    precio: p,
-                    cantidad: q
-                };
+        const render = () => {
+            const tb = document.getElementById("cartTable"); tb.innerHTML=""; let tot=0;
+            if(!cart.length) document.getElementById("msgEmpty").textContent="Carrito vacío";
+            cart.forEach((i,x)=>{
+                const p=i.price||i.precio||0, q=i.quantity||i.cantidad||1, sub=p*q; tot+=sub;
+                tb.innerHTML+=`<tr><td>${i.name||i.nombre}</td><td>${q}</td><td>$${p.toLocaleString("es-CL")}</td><td>$${sub.toLocaleString("es-CL")}</td><td><button class="btn btn-sm text-danger" onclick="rem(${x})"><i class="bi bi-trash"></i></button></td></tr>`;
             });
+            document.getElementById("cTotal").textContent="$"+tot.toLocaleString("es-CL");
+        };
+        window.rem=(i)=>{cart.splice(i,1); saveCart(cart); render(); update();};
+        render();
 
+        document.getElementById("orderForm").onsubmit = async (e) => {
+            e.preventDefault();
+            if(!cart.length) return alert("Carrito vacío");
+            const total = cart.reduce((s,i)=>s+((i.price||0)*(i.quantity||1)),0);
+            const items = cart.map(i=>({productoId:i.id||i._id, nombre:i.name||i.nombre, precio:i.price||0, cantidad:i.quantity||1}));
             try {
-                console.log("Enviando pedido...", { items: itemsBackend, total: totalSeguro });
-                
-                const data = await apiFetch("/orders", "POST", {
-                    customer_name: nombre,
-                    email: email,
-                    phone: telefono,
-                    address: direccion,
-                    note: nota,
-                    items: itemsBackend,
-                    total: totalSeguro
+                await apiFetch("/orders", "POST", {
+                    customer_name: document.getElementById("cName").value, email: document.getElementById("cEmail").value,
+                    phone: document.getElementById("cPhone").value, address: document.getElementById("cAddr").value,
+                    note: document.getElementById("cNote").value, items, total
                 });
-
-                showToast(`Pedido creado con éxito! ID: ${data._id}`, "success");
-                clearCart();
-                setTimeout(() => window.location.href = "index.html", 2500);
-
-            } catch (err) {
-                console.error("Error al enviar pedido:", err);
-                showToast("Error: " + err.message, "danger");
-            }
-        });
+                alert("Pedido Enviado"); clearCart(); window.location.href="index.html";
+            } catch(er){ alert("Error: "+er.message); }
+        };
     });
 </script>
 </body>

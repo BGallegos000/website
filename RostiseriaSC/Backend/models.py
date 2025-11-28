@@ -1,13 +1,10 @@
-# models.py
-from typing import Optional, List, Any
-from datetime import datetime, timedelta
+from typing import Optional, List
+from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr, BeforeValidator
 from typing_extensions import Annotated
 
-# Helper para convertir ObjectId de Mongo a string automáticamente
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
-# --- ENUMS (Criterio 7: Reflejo del dominio) ---
 class Role:
     USER = "user"
     ADMIN = "admin"
@@ -20,16 +17,13 @@ class OrderStatus:
     DELIVERED = "Entregado"
     CANCELED = "Anulado"
 
-# --- MODELOS ---
-
 class Product(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
     price: float
     category: str
     description: str
-    # El front usa "img", mapeamos img_url del backend a "img"
-    img_url: str = Field(alias="img") 
+    img_url: str = Field(alias="img")
     stock: int = 100
     active: bool = True
 
@@ -53,7 +47,6 @@ class User(BaseModel):
         populate_by_name = True
 
 class OrderItem(BaseModel):
-    # ALIAS CLAVE: Tu carrito.html envía "productoId" y "cantidad"
     product_id: str = Field(alias="productoId")
     name: str = Field(alias="nombre")
     price: float = Field(alias="precio")
@@ -77,3 +70,29 @@ class Order(BaseModel):
     class Config:
         populate_by_name = True
         json_encoders = {datetime: lambda dt: dt.isoformat()}
+        
+        
+# ... (Todo lo anterior igual) ...
+
+class Order(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_email: Optional[EmailStr] = None
+    customer_name: str
+    phone: str
+    address: str
+    note: Optional[str] = None
+    items: List[OrderItem]
+    total: float
+    status: str = OrderStatus.PENDING
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {datetime: lambda dt: dt.isoformat()}
+
+# --- NUEVO MODELO PARA CONTACTO ---
+class ContactMessage(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
+    created_at: datetime = Field(default_factory=datetime.now)

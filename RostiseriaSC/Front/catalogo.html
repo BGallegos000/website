@@ -1,226 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catálogo - Rostisería SC</title>
+  <meta charset="utf-8"/><title>Catálogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="DiseñoPag.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
-  <!-- Navbar -->
-<nav class="navbar navbar-expand navbar-custom sticky-top">
+  <nav class="navbar navbar-expand navbar-custom sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="index.html">
-        <i class="bi bi-fire text-warning me-2"></i>Rostisería SC
-      </a>
-
+      <a class="navbar-brand" href="index.html"><i class="bi bi-fire text-warning me-2"></i>Rostisería SC</a>
       <div class="d-flex align-items-center ms-auto">
-        
         <div class="d-none d-md-flex align-items-center me-3">
             <a class="nav-link mx-2" href="index.html">Inicio</a>
-            <a class="nav-link mx-2" href="catalogo.html">Catálogo</a>
-            <span id="navLoginContainer">
-                <a class="nav-link mx-2" href="login.html">Ingresar</a>
-            </span>
+            <a class="nav-link mx-2 active" href="catalogo.html">Catálogo</a>
+            <span id="navLoginContainer"><a class="nav-link mx-2" href="login.html">Ingresar</a></span>
         </div>
-
         <a class="btn position-relative me-3 text-light" href="carrito.html">
-            <i class="bi bi-cart3 fs-5"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">
-                0
-            </span>
+            <i class="bi bi-cart3 fs-5"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
         </a>
-
         <div class="dropdown">
-            <button class="btn btn-outline-light border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-list fs-4"></i>
-            </button>
+            <button class="btn btn-outline-light border-0" data-bs-toggle="dropdown"><i class="bi bi-list fs-4"></i></button>
             <ul class="dropdown-menu dropdown-menu-end shadow-lg">
                 <li class="d-md-none"><a class="dropdown-item" href="catalogo.html">Ir al Catálogo</a></li>
-                <li class="d-md-none"><a class="dropdown-item" href="login.html" id="mobileLoginLink">Iniciar Sesión</a></li>
-                <li class="d-md-none"><hr class="dropdown-divider"></li>
-                
-                <li><a class="dropdown-item" href="nosotros.html"><i class="bi bi-people me-2"></i>Nosotros</a></li>
-                <li><a class="dropdown-item" href="contacto.html"><i class="bi bi-envelope me-2"></i>Contacto</a></li>
-                
-                <li id="navAdminItem" class="d-none">
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item text-warning fw-bold" href="admin.html">
-                        <i class="bi bi-speedometer2 me-2"></i>Panel Admin
-                    </a>
-                </li>
+                <li class="d-md-none"><a class="dropdown-item" href="login.html" id="mobileLoginLink">Ingresar</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="nosotros.html">Nosotros</a></li>
+                <li><a class="dropdown-item" href="contacto.html">Contacto</a></li>
+                <li id="navAdminItem" class="d-none"><hr class="dropdown-divider"><a class="dropdown-item text-warning fw-bold" href="admin.html">Panel Admin</a></li>
             </ul>
         </div>
-
       </div>
     </div>
   </nav>
 
-  <!-- Catálogo -->
-  <section class="py-5">
-    <div class="container">
-      <h2 class="fw-bold mb-4 text-center">Nuestro Catálogo</h2>
-
-      <!-- Filtros -->
+  <section class="py-5 container">
+      <h2 class="section-title text-center">Nuestro Catálogo</h2>
       <div class="row mb-4 g-2">
-        <div class="col-md-4">
-          <input type="text" id="searchInput" class="form-control" placeholder="Buscar producto.">
-        </div>
-        <div class="col-md-4">
-          <select id="categoryFilter" class="form-select">
-            <option value="">Todas las categorías</option>
-            <option value="Pollo">Pollo</option>
-            <option value="Carne">Carne</option>
-            <option value="Ensaladas">Ensaladas</option>
-            <option value="Mariscos">Mariscos</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <button id="clearFilters" class="btn btn-secondary w-100">Limpiar</button>
-        </div>
+        <div class="col-md-4"><input type="text" id="searchInput" class="form-control" placeholder="Buscar..."></div>
+        <div class="col-md-4"><select id="categoryFilter" class="form-select"><option value="">Todas</option><option value="Pollo">Pollo</option><option value="Carne">Carne</option><option value="Ensaladas">Ensaladas</option></select></div>
+        <div class="col-md-4"><button id="clearFilters" class="btn btn-secondary w-100">Limpiar</button></div>
       </div>
-
       <div id="productList" class="row g-4"></div>
-    </div>
   </section>
 
-  <!-- Modal detalle producto -->
-  <div class="modal fade" id="productModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 id="modalTitle" class="modal-title"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body row">
-          <div class="col-md-6">
-            <img id="modalImg" src="" class="img-fluid rounded shadow-sm">
-          </div>
-          <div class="col-md-6">
-            <p id="modalDesc"></p>
-            <h4 id="modalPrice" class="text-primary fw-bold"></h4>
-            <button id="modalAddBtn" class="btn btn-danger mt-3">
-              <i class="bi bi-cart-plus"></i> Agregar al carrito
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast container -->
+  <div class="modal fade" id="productModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="modalTitle"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body text-center"><img id="modalImg" class="img-fluid rounded mb-3" style="max-height:250px"><p id="modalDesc"></p><h4 class="text-primary fw-bold" id="modalPrice"></h4><button id="modalAddBtn" class="btn btn-primary-custom w-100 mt-3">Agregar al Carrito</button></div></div></div></div>
   <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
 
-  <!-- Helpers de API y sesión -->
+  <footer class="footer-section text-center"><p class="mb-0">&copy; 2025 Rostisería SC</p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api_utils.js"></script>
   <script src="TiempoSesion.js"></script>
-
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // ... (Tu código de Toast y funciones auxiliares sigue igual) ...
+        let cart = getCart(); const update=()=>document.getElementById('mini-cart-count').textContent=cart.reduce((s,i)=>s+(i.quantity||1),0); update();
+        const user = getLoggedUser();
+        if(user) {
+            if(user.isAdmin) document.getElementById("navAdminItem").classList.remove("d-none");
+            document.getElementById("navLoginContainer").innerHTML = `<a class="nav-link mx-2 text-warning" href="#" onclick="clearAuth();window.location.reload()">Salir</a>`;
+            const mob = document.getElementById("mobileLoginLink"); if(mob){ mob.textContent="Cerrar Sesión"; mob.onclick=()=>{clearAuth();window.location.reload()};}
+        }
+        
+        function showToast(m){ const d=document.createElement('div'); d.className="toast show bg-success text-white mb-2"; d.innerHTML=`<div class="toast-body">${m}</div>`; document.getElementById('toast-container').appendChild(d); setTimeout(()=>d.remove(),3000); }
 
-      function showToast(msg, color = 'success') {
-        const c = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = `toast align-items-center text-white bg-${color} border-0 mb-2`;
-        t.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
-        c.appendChild(t); new bootstrap.Toast(t).show();
-      }
-
-      // --- MANEJO DEL CARRITO ---
-      let cart = getCart(); // Usa la función de api_utils.js
-      function updateMiniCart() {
-        const total = cart.reduce((s, i) => s + (i.quantity || 1), 0); // Asegura que lea quantity
-        const badge = document.getElementById('mini-cart-count');
-        if (badge) badge.textContent = total;
-      }
-      updateMiniCart();
-
-      // --- CARGA DE PRODUCTOS ---
-      let products = [];
-      const list = document.getElementById('productList');
-
-      async function loadProductsFromApi() {
+        let products = [];
         try {
-          const data = await apiFetch('/products', 'GET');
-          // Mapeo CRÍTICO: Aseguramos que los nombres sean consistentes
-          products = data.map(p => ({
-            id: p._id || p.id,
-            name: p.name,
-            price: p.price,
-            img: p.img || 'imagenes/pollo4.jpg',
-            desc: p.description || '',
-            category: p.category || ''
-          }));
-        } catch (err) {
-          console.error('Error API', err);
-          showToast('Error cargando productos', 'danger');
-        }
-      }
-
-      function renderProducts(filtered = products) {
-          list.innerHTML = '';
-          filtered.forEach(p => {
-              // ... (Tu HTML de la tarjeta sigue igual) ...
-              list.innerHTML += `
-              <div class="col-md-4">
-                  <div class="card h-100 product-card" data-id="${p.id}">
-                  <img src="${p.img}" class="card-img-top" style="height:200px; object-fit:cover;">
-                  <div class="card-body text-center">
-                      <h5>${p.name}</h5>
-                      <p class="text-primary fw-bold">$${p.price.toLocaleString("es-CL")}</p>
-                      <button class="btn btn-sm btn-outline-danger add-btn">Ver Detalle</button>
-                  </div>
-                  </div>
-              </div>`;
-          });
-
-          // Click en tarjetas
-          document.querySelectorAll('.product-card').forEach(card => {
-              card.addEventListener('click', () => {
-                  const id = card.dataset.id;
-                  selectedProduct = products.find(p => String(p.id) === String(id));
-                  if (!selectedProduct) return;
-                  
-                  // Llenar modal
-                  document.getElementById('modalTitle').textContent = selectedProduct.name;
-                  document.getElementById('modalImg').src = selectedProduct.img;
-                  document.getElementById('modalDesc').textContent = selectedProduct.desc;
-                  document.getElementById('modalPrice').textContent = "$" + selectedProduct.price.toLocaleString("es-CL");
-                  modal.show();
-              });
-          });
-      }
-
-      // --- MODAL Y AGREGAR AL CARRITO ---
-      const modal = new bootstrap.Modal(document.getElementById('productModal'));
-      let selectedProduct = null;
-
-      document.getElementById('modalAddBtn').addEventListener('click', () => {
-        if (selectedProduct) {
-          // AQUÍ ESTÁ LA CORRECCIÓN CLAVE:
-          // Usamos addToCart de api_utils.js que maneja la lógica estandarizada
-          addToCart({
-              id: selectedProduct.id,
-              name: selectedProduct.name,
-              price: selectedProduct.price,
-              quantity: 1 // <--- Definimos explícitamente quantity
-          });
-          
-          // Recargamos el carrito local para actualizar el contador
-          cart = getCart();
-          updateMiniCart();
-          showToast(`${selectedProduct.name} agregado`, 'success');
-          modal.hide();
-        }
-      });
-
-      // Inicialización
-      await loadProductsFromApi();
-      renderProducts();
+            const data = await apiFetch('/products', 'GET');
+            products = data.map(p => ({id: p._id||p.id, name: p.name, price: p.price, img: p.img||'imagenes/pollo4.jpg', desc: p.description, category: p.category}));
+            const render = (list) => {
+                const c = document.getElementById('productList'); c.innerHTML="";
+                list.forEach(p => c.innerHTML+=`<div class="col-md-4"><div class="card h-100 shadow-sm border-0"><img src="${p.img}" class="card-img-top" style="height:200px;object-fit:cover"><div class="card-body text-center"><h5 class="card-title">${p.name}</h5><p class="text-primary fw-bold">$${p.price.toLocaleString("es-CL")}</p><button class="btn btn-outline-custom btn-sm" onclick="openM('${p.id}')">Ver Detalle</button></div></div></div>`);
+            };
+            window.openM = (id) => {
+                const p = products.find(x=>x.id===id);
+                document.getElementById('modalTitle').textContent=p.name; document.getElementById('modalImg').src=p.img; document.getElementById('modalDesc').textContent=p.desc; document.getElementById('modalPrice').textContent="$"+p.price.toLocaleString("es-CL");
+                document.getElementById('modalAddBtn').onclick=()=>{ addToCart({id:p.id, name:p.name, price:p.price, quantity:1}); cart=getCart(); update(); showToast("Agregado"); bootstrap.Modal.getInstance(document.getElementById('productModal')).hide(); };
+                new bootstrap.Modal(document.getElementById('productModal')).show();
+            };
+            render(products);
+            
+            document.getElementById('searchInput').oninput=(e)=>render(products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())));
+            document.getElementById('categoryFilter').onchange=(e)=>render(products.filter(p=>!e.target.value || p.category===e.target.value));
+            document.getElementById('clearFilters').onclick=()=>{document.getElementById('searchInput').value="";document.getElementById('categoryFilter').value="";render(products);};
+        } catch(e){console.error(e);}
     });
   </script>
 </body>
