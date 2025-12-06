@@ -1,14 +1,10 @@
-import os
 import motor.motor_asyncio
 from typing import Optional
-from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
-
-# Configuración
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "rostiseria_db")
+# --- CONFIGURACIÓN DIRECTA (PARA ASEGURAR CONEXIÓN) ---
+# Copia y pega esto tal cual. Apunta a tu Cluster en la Nube.
+MONGODB_URI = "mongodb+srv://admin_rostiseria:Majinb00420-@cluster0.gimrz8i.mongodb.net/?retryWrites=true&w=majority"
+DB_NAME = "rostiseria_db"
 
 _client: Optional[motor.motor_asyncio.AsyncIOMotorClient] = None
 _db = None
@@ -16,23 +12,28 @@ _db = None
 async def init_db():
     global _client, _db
     try:
-        # Atlas fuerza la conexión segura automáticamente
+        print("Intentando conectar a la Nube 🍄 (Atlas)...")
+        # Creamos el cliente
         _client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
         _db = _client[DB_NAME]
         
-        # Verificar conexión
-        await _client.server_info()
-        print(f"✅ Base de Datos Conectada: {DB_NAME} (Atlas Cloud)")
+        # Prueba de fuego: Pedir información al servidor de Atlas
+        info = await _client.server_info()
+        print(f"CONEXIÓN EXITOSA Estás en M🍄 Atlas v{info.get('version')}")
+        
     except Exception as e:
-        print(f"❌ Error de Conexión: {e}")
+        print(f"ERROR FATAL DE CONEXIÓN: {e}")
 
 async def close_db():
     global _client
     if _client:
         _client.close()
-        print("🔻 Conexión cerrada.")
+        print("Conexión cerrada. 💀")
 
 def get_collection(name: str):
     if _db is None:
+        # Recuperación de emergencia si _db no se asignó
+        if _client:
+            return _client[DB_NAME][name]
         raise RuntimeError("BD no inicializada.")
     return _db[name]

@@ -3,8 +3,10 @@ from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr, BeforeValidator
 from typing_extensions import Annotated
 
+# Helper para ObjectId
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
+# --- ENUMS ---
 class Role:
     USER = "user"
     ADMIN = "admin"
@@ -16,6 +18,8 @@ class OrderStatus:
     EN_CAMINO = "En camino"
     DELIVERED = "Entregado"
     CANCELED = "Anulado"
+
+# --- MODELOS DE DATOS ---
 
 class Product(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
@@ -54,22 +58,6 @@ class OrderItem(BaseModel):
 
     class Config:
         populate_by_name = True
-
-class Order(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    user_email: Optional[EmailStr] = None
-    customer_name: str
-    phone: str
-    address: str
-    note: Optional[str] = None
-    items: List[OrderItem]
-    total: float
-    status: str = OrderStatus.PENDING
-    created_at: datetime = Field(default_factory=datetime.now)
-
-    class Config:
-        populate_by_name = True
-        json_encoders = {datetime: lambda dt: dt.isoformat()}
 
 class Order(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
