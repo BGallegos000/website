@@ -37,7 +37,7 @@ async def get_orders(email: Optional[str] = Query(None)):
     coll = get_collection("orders")
     filtro = {}
     
-    # Si se envía email, filtrar por usuario. Si no, devuelve todo (útil para admin si lo necesita)
+    # Si se envía email, filtrar por usuario. Si no, devuelve todo
     if email:
         filtro["user_email"] = email
 

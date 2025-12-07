@@ -206,16 +206,15 @@
     let datosPedidoTemporal = {};
 
     document.addEventListener("DOMContentLoaded", () => {
-        // 1. Configuración del Navbar (Centralizada)
         configurarNavbar();
 
-        // 2. Autocompletar email si está logueado
+        // Autocompletar email si está logueado
         const user = getLoggedUser();
         if (user) {
             document.getElementById("cEmail").value = user.email;
         }
 
-        // 3. Renderizar Carrito
+        // Renderizar Carrito
         renderCart();
     });
 

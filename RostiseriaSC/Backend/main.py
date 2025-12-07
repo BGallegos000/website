@@ -10,7 +10,7 @@ from routes.contact import router as contact_router
 
 app = FastAPI(title="Rostisería SC API", version="1.0.0")
 
-# 1. Protección de Host (Evita ataques de host header)
+# 1. Protección de Host 
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1"])
 
 # 2. Compresión GZip (Mejora rendimiento en respuestas grandes)

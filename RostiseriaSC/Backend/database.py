@@ -1,8 +1,7 @@
 import motor.motor_asyncio
 from typing import Optional
 
-# --- CONFIGURACIÓN DIRECTA (PARA ASEGURAR CONEXIÓN) ---
-# Copia y pega esto tal cual. Apunta a tu Cluster en la Nube.
+# --- CONFIGURACIÓN DIRECTA DE LA BD ---
 MONGODB_URI = "mongodb+srv://admin_rostiseria:Majinb00420-@cluster0.gimrz8i.mongodb.net/?retryWrites=true&w=majority"
 DB_NAME = "rostiseria_db"
 
@@ -12,12 +11,11 @@ _db = None
 async def init_db():
     global _client, _db
     try:
-        print("Intentando conectar a la Nube 🍄 (Atlas)...")
+        print("Intentando conectar a la Nube (Atlas)...")
         # Creamos el cliente
         _client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
         _db = _client[DB_NAME]
-        
-        # Prueba de fuego: Pedir información al servidor de Atlas
+    
         info = await _client.server_info()
         print(f"CONEXIÓN EXITOSA Estás en M🍄 Atlas v{info.get('version')}")
         

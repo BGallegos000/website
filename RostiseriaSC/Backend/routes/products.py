@@ -4,7 +4,7 @@ from database import get_collection
 from models import Product
 
 router = APIRouter(prefix="/products", tags=["Products"])
-
+# --- 1. LISTAR PRODUCTOS (GET) ---
 @router.get("/", response_model=List[Product])
 async def list_products(search: Optional[str] = None, category: Optional[str] = None):
     query = {"active": True}
@@ -14,6 +14,7 @@ async def list_products(search: Optional[str] = None, category: Optional[str] = 
     cursor = get_collection("products").find(query)
     return [Product(**doc) async for doc in cursor]
 
+# --- 2. CREAR PRODUCTO (POST) ---
 @router.post("/", status_code=201)
 async def create_product(product: Product):
     """
@@ -21,7 +22,7 @@ async def create_product(product: Product):
     """
     coll = get_collection("products")
     
-    # Validar si ya existe un producto con el mismo nombre (opcional pero recomendado)
+    # Validar si ya existe un producto con el mismo nombre 
     existing = await coll.find_one({"name": product.name})
     if existing:
         raise HTTPException(status_code=400, detail="El producto ya existe")

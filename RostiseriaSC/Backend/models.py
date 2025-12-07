@@ -21,6 +21,7 @@ class OrderStatus:
 
 # --- MODELOS DE DATOS ---
 
+# --- PRODUCTOS ---
 class Product(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
@@ -34,7 +35,8 @@ class Product(BaseModel):
     class Config:
         populate_by_name = True
         json_encoders = {str: str}
-
+        
+# --- USUARIOS ---
 class User(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
@@ -49,7 +51,8 @@ class User(BaseModel):
 
     class Config:
         populate_by_name = True
-
+        
+# --- PEDIDOS ---
 class OrderItem(BaseModel):
     product_id: str = Field(alias="productoId")
     name: str = Field(alias="nombre")
@@ -74,7 +77,8 @@ class Order(BaseModel):
     class Config:
         populate_by_name = True
         json_encoders = {datetime: lambda dt: dt.isoformat()}
-
+        
+# --- MENSAJES DE CONTACTO ---
 class ContactMessage(BaseModel):
     name: str
     email: EmailStr

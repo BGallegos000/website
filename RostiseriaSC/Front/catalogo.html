@@ -123,7 +123,7 @@
   <script>
     // Variables Globales
     let allProducts = [];       // Todos los productos de la API
-    let filteredProducts = [];  // Productos filtrados (los que se están viendo actualmente)
+    let filteredProducts = [];  // Productos filtrados según búsqueda/categoría
     
     // Configuración de Paginación
     let currentPage = 1;
@@ -304,7 +304,7 @@
 
         new bootstrap.Modal(document.getElementById('productModal')).show();
     };
-
+// --- LÓGICA DE CARRITO ---
     window.adjustModalQty = (change) => {
         const newQty = modalQuantity + change;
         if (newQty >= 1) {
@@ -312,7 +312,7 @@
             updateModalQtyDisplay();
         }
     };
-
+// Agregar producto al carrito
     function updateModalQtyDisplay() {
         document.getElementById('modalQty').textContent = modalQuantity;
     }
@@ -323,7 +323,7 @@
         const el = document.getElementById('mini-cart-count');
         if(el) el.textContent = cart.reduce((s,i)=>s+(i.quantity||1),0);
     }
-
+// Agregar producto al carrito
     function showToast(msg) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
