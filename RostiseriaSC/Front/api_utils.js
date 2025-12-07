@@ -9,17 +9,20 @@ function clearAuth() { localStorage.removeItem(K_AUTH); }
 
 // --- UTILIDADES DE API ---
 async function apiFetch(path, method="GET", body=null, auth=false) {
-    const headers = {"Content-Type": "application/json"};
+    // Preparar los headers
+    const headers = {"Content-Type": "application/json"}; 
     if(auth) {
         const s = getAuth();
         if(!s) throw new Error("Sin sesión");
         headers["Authorization"] = `Bearer ${s.token}`;
     }
+    // Realizar la petición
     const res = await fetch(API_BASE_URL + path, { method, headers, body: body ? JSON.stringify(body) : null });
     if(!res.ok) {
         const err = await res.json().catch(()=>({}));
         throw new Error(err.detail || `Error ${res.status}`);
     }
+    // Devolver el resultado
     return res.status===204 ? null : await res.json();
 }
 
