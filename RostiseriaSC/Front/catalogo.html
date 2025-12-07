@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"/><title>Catálogo</title>
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catálogo - Rostisería SC</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="DiseñoPag.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
+  
   <nav class="navbar navbar-expand navbar-custom sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="index.html"><i class="bi bi-fire text-warning me-2"></i>Rostisería SC</a>
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-fire text-warning me-2"></i>Rostisería SC
+      </a>
       <div class="d-flex align-items-center ms-auto">
         <div class="d-none d-md-flex align-items-center me-3">
             <a class="nav-link mx-2" href="index.html">Inicio</a>
@@ -18,7 +22,8 @@
             <span id="navLoginContainer"><a class="nav-link mx-2" href="login.html">Ingresar</a></span>
         </div>
         <a class="btn position-relative me-3 text-light" href="carrito.html">
-            <i class="bi bi-cart3 fs-5"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
         </a>
         <div class="dropdown">
             <button class="btn btn-outline-light border-0" data-bs-toggle="dropdown"><i class="bi bi-list fs-4"></i></button>
@@ -37,29 +42,76 @@
 
   <section class="py-5 container">
       <h2 class="section-title text-center">Nuestro Catálogo</h2>
-      <div class="row mb-4 g-2">
-        <div class="col-md-4"><input type="text" id="searchInput" class="form-control" placeholder="Buscar..."></div>
+      
+      <div class="row mb-4 g-2 bg-white p-3 rounded shadow-sm">
         <div class="col-md-4">
-          <select id="categoryFilter" class="form-select">
-            <option value="">Todas las categorías</option>
-            <option value="Pollo">Pollo</option>
-            <option value="Carne">Carne</option>
-            <option value="Masas">Masas</option>
-            <option value="Platos">Platos</option>
-            <option value="Mariscos">Mariscos</option>
-            <option value="Ensaladas">Ensaladas</option>
-            <option value="Acompañamientos">Acompañamientos</option>
-            <option value="Sándwiches">Sándwiches</option>
-            <option value="Bebidas">Bebidas</option>
-            <option value="Postres">Postres</option>
-          </select>
+            <label class="form-label small text-muted">Búsqueda</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar plato...">
+            </div>
         </div>
-        <div class="col-md-4"><button id="clearFilters" class="btn btn-secondary w-100">Limpiar</button></div>
+        <div class="col-md-4">
+            <label class="form-label small text-muted">Categoría</label>
+            <select id="categoryFilter" class="form-select">
+                <option value="">Todas las categorías</option>
+                <option value="Pollo">Pollo</option>
+                <option value="Carne">Carne</option>
+                <option value="Masas">Masas</option>
+                <option value="Platos">Platos</option>
+                <option value="Mariscos">Mariscos</option>
+                <option value="Ensaladas">Ensaladas</option>
+                <option value="Sándwiches">Sándwiches</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Postres">Postres</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button id="clearFilters" class="btn btn-secondary w-100">
+                <i class="bi bi-x-circle me-2"></i>Limpiar Filtros
+            </button>
+        </div>
       </div>
+
       <div id="productList" class="row g-4"></div>
+
+      <div id="noResults" class="text-center py-5 d-none">
+          <i class="bi bi-search display-1 text-muted opacity-25"></i>
+          <p class="mt-3 text-muted">No encontramos productos que coincidan con tu búsqueda.</p>
+      </div>
+
+      <nav class="d-flex justify-content-center mt-5">
+          <ul class="pagination" id="paginationControls">
+              </ul>
+      </nav>
   </section>
 
-  <div class="modal fade" id="productModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="modalTitle"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body text-center"><img id="modalImg" class="img-fluid rounded mb-3" style="max-height:250px"><p id="modalDesc"></p><h4 class="text-primary fw-bold" id="modalPrice"></h4><button id="modalAddBtn" class="btn btn-primary-custom w-100 mt-3">Agregar al Carrito</button></div></div></div></div>
+  <div class="modal fade" id="productModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header border-0">
+                  <h5 class="modal-title fw-bold" id="modalTitle"></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body text-center">
+                  <img id="modalImg" class="img-fluid rounded mb-3 shadow-sm" style="max-height:250px; object-fit: cover;">
+                  <p id="modalDesc" class="text-muted"></p>
+                  <h4 class="text-primary fw-bold mb-3" id="modalPrice"></h4>
+                  
+                  <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+                      <button class="btn btn-outline-secondary btn-sm" onclick="adjustModalQty(-1)"><i class="bi bi-dash"></i></button>
+                      <span id="modalQty" class="fw-bold fs-5">1</span>
+                      <button class="btn btn-outline-secondary btn-sm" onclick="adjustModalQty(1)"><i class="bi bi-plus"></i></button>
+                  </div>
+
+                  <button id="modalAddBtn" class="btn btn-primary-custom w-100">
+                      Agregar al Carrito <i class="bi bi-cart-plus ms-2"></i>
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>
+
   <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
 
   <footer class="footer-section text-center"><p class="mb-0">&copy; 2025 Rostisería SC</p></footer>
@@ -67,39 +119,219 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api_utils.js"></script>
   <script src="TiempoSesion.js"></script>
+  
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        let cart = getCart(); const update=()=>document.getElementById('mini-cart-count').textContent=cart.reduce((s,i)=>s+(i.quantity||1),0); update();
-        const user = getLoggedUser();
-        if(user) {
-            if(user.isAdmin) document.getElementById("navAdminItem").classList.remove("d-none");
-            document.getElementById("navLoginContainer").innerHTML = `<a class="nav-link mx-2 text-warning" href="#" onclick="clearAuth();window.location.reload()">Salir</a>`;
-            const mob = document.getElementById("mobileLoginLink"); if(mob){ mob.textContent="Cerrar Sesión"; mob.onclick=()=>{clearAuth();window.location.reload()};}
-        }
-        
-        function showToast(m){ const d=document.createElement('div'); d.className="toast show bg-success text-white mb-2"; d.innerHTML=`<div class="toast-body">${m}</div>`; document.getElementById('toast-container').appendChild(d); setTimeout(()=>d.remove(),3000); }
+    // Variables Globales
+    let allProducts = [];       // Todos los productos de la API
+    let filteredProducts = [];  // Productos filtrados (los que se están viendo actualmente)
+    
+    // Configuración de Paginación
+    let currentPage = 1;
+    const itemsPerPage = 6;     // Muestra 6 productos por página
 
-        let products = [];
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. Configuración Básica
+        configurarNavbar();
+        updateCartCounter();
+
+        // 2. Cargar Productos
         try {
             const data = await apiFetch('/products', 'GET');
-            products = data.map(p => ({id: p._id||p.id, name: p.name, price: p.price, img: p.img||'imagenes/pollo4.jpg', desc: p.description, category: p.category}));
-            const render = (list) => {
-                const c = document.getElementById('productList'); c.innerHTML="";
-                list.forEach(p => c.innerHTML+=`<div class="col-md-4"><div class="card h-100 shadow-sm border-0"><img src="${p.img}" class="card-img-top" style="height:200px;object-fit:cover"><div class="card-body text-center"><h5 class="card-title">${p.name}</h5><p class="text-primary fw-bold">$${p.price.toLocaleString("es-CL")}</p><button class="btn btn-outline-custom btn-sm" onclick="openM('${p.id}')">Ver Detalle</button></div></div></div>`);
-            };
-            window.openM = (id) => {
-                const p = products.find(x=>x.id===id);
-                document.getElementById('modalTitle').textContent=p.name; document.getElementById('modalImg').src=p.img; document.getElementById('modalDesc').textContent=p.desc; document.getElementById('modalPrice').textContent="$"+p.price.toLocaleString("es-CL");
-                document.getElementById('modalAddBtn').onclick=()=>{ addToCart({id:p.id, name:p.name, price:p.price, quantity:1}); cart=getCart(); update(); showToast("Agregado"); bootstrap.Modal.getInstance(document.getElementById('productModal')).hide(); };
-                new bootstrap.Modal(document.getElementById('productModal')).show();
-            };
-            render(products);
+            // Mapeo de datos para asegurar compatibilidad
+            allProducts = data.map(p => ({
+                id: p._id || p.id,
+                name: p.name,
+                price: p.price,
+                img: p.img || p.img_url || 'imagenes/pollo4.jpg',
+                desc: p.description,
+                category: p.category
+            }));
             
-            document.getElementById('searchInput').oninput=(e)=>render(products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())));
-            document.getElementById('categoryFilter').onchange=(e)=>render(products.filter(p=>!e.target.value || p.category===e.target.value));
-            document.getElementById('clearFilters').onclick=()=>{document.getElementById('searchInput').value="";document.getElementById('categoryFilter').value="";render(products);};
-        } catch(e){console.error(e);}
+            // Inicialmente, los filtrados son todos
+            filteredProducts = [...allProducts];
+            renderCatalog(); // Primera renderización
+
+        } catch(e) {
+            console.error(e);
+            document.getElementById('productList').innerHTML = `<div class="alert alert-danger text-center w-100">Error cargando el catálogo. Intenta refrescar.</div>`;
+        }
+
+        // 3. Eventos de Filtros
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            document.getElementById('searchInput').value = "";
+            document.getElementById('categoryFilter').value = "";
+            applyFilters();
+        });
     });
+
+    // --- LÓGICA DE FILTRADO ---
+    function applyFilters() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const categoryVal = document.getElementById('categoryFilter').value;
+
+        // Filtrar el array maestro
+        filteredProducts = allProducts.filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(searchText);
+            const matchesCategory = categoryVal === "" || p.category === categoryVal;
+            return matchesSearch && matchesCategory;
+        });
+
+        // Resetear a página 1 siempre que se filtra
+        currentPage = 1;
+        renderCatalog();
+    }
+
+    // --- LÓGICA DE RENDERIZADO Y PAGINACIÓN ---
+    function renderCatalog() {
+        const container = document.getElementById('productList');
+        const noResults = document.getElementById('noResults');
+        const paginationContainer = document.getElementById('paginationControls');
+
+        container.innerHTML = "";
+
+        // 1. Manejar caso vacío
+        if (filteredProducts.length === 0) {
+            noResults.classList.remove('d-none');
+            paginationContainer.innerHTML = "";
+            return;
+        } else {
+            noResults.classList.add('d-none');
+        }
+
+        // 2. Calcular Páginas
+        const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        
+        // Calcular índices de corte
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        
+        // Obtener SOLO los productos de esta página
+        const productsToShow = filteredProducts.slice(startIndex, endIndex);
+
+        // 3. Dibujar Tarjetas
+        productsToShow.forEach(p => {
+            container.innerHTML += `
+                <div class="col-md-4 col-sm-6 fade-in">
+                    <div class="card h-100 shadow-sm border-0 product-card">
+                        <div class="position-relative overflow-hidden">
+                            <img src="${p.img}" class="card-img-top" style="height:200px; object-fit:cover; transition: transform 0.3s;" alt="${p.name}">
+                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2 shadow-sm">${p.category}</span>
+                        </div>
+                        <div class="card-body text-center d-flex flex-column">
+                            <h5 class="card-title fw-bold text-dark">${p.name}</h5>
+                            <p class="text-primary fw-bold fs-5 mb-auto">$${p.price.toLocaleString("es-CL")}</p>
+                            <button class="btn btn-outline-custom mt-3 rounded-pill" onclick="openModal('${p.id}')">
+                                Ver Detalle
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        // 4. Dibujar Controles de Paginación
+        renderPaginationControls(totalPages);
+    }
+
+    function renderPaginationControls(totalPages) {
+        const container = document.getElementById("paginationControls");
+        container.innerHTML = "";
+
+        if (totalPages <= 1) return;
+
+        // Botón Anterior
+        const prevClass = currentPage === 1 ? "disabled" : "";
+        container.innerHTML += `
+            <li class="page-item ${prevClass}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>
+            </li>`;
+
+        // Botones Numéricos
+        for (let i = 1; i <= totalPages; i++) {
+            const activeClass = i === currentPage ? "active bg-primary border-primary text-white" : "";
+            container.innerHTML += `
+                <li class="page-item">
+                    <a class="page-link ${activeClass}" href="#" onclick="changePage(${i})">${i}</a>
+                </li>`;
+        }
+
+        // Botón Siguiente
+        const nextClass = currentPage === totalPages ? "disabled" : "";
+        container.innerHTML += `
+            <li class="page-item ${nextClass}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>
+            </li>`;
+    }
+
+    window.changePage = (page) => {
+        currentPage = page;
+        renderCatalog(); // Re-renderizar con la nueva página
+        // Scroll suave hacia arriba para ver los nuevos productos
+        document.getElementById('productList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // --- LÓGICA DEL MODAL DE PRODUCTO ---
+    let currentModalProduct = null;
+    let modalQuantity = 1;
+
+    window.openModal = (id) => {
+        const p = allProducts.find(x => x.id === id);
+        if (!p) return;
+
+        currentModalProduct = p;
+        modalQuantity = 1; // Resetear cantidad
+
+        document.getElementById('modalTitle').textContent = p.name;
+        document.getElementById('modalImg').src = p.img;
+        document.getElementById('modalDesc').textContent = p.desc;
+        document.getElementById('modalPrice').textContent = "$"+p.price.toLocaleString("es-CL");
+        updateModalQtyDisplay();
+
+        // Configurar botón Agregar
+        document.getElementById('modalAddBtn').onclick = () => {
+            addToCart({
+                id: p.id,
+                name: p.name,
+                price: p.price,
+                quantity: modalQuantity
+            });
+            updateCartCounter();
+            showToast(`Agregado: ${modalQuantity}x ${p.name}`);
+            bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+        };
+
+        new bootstrap.Modal(document.getElementById('productModal')).show();
+    };
+
+    window.adjustModalQty = (change) => {
+        const newQty = modalQuantity + change;
+        if (newQty >= 1) {
+            modalQuantity = newQty;
+            updateModalQtyDisplay();
+        }
+    };
+
+    function updateModalQtyDisplay() {
+        document.getElementById('modalQty').textContent = modalQuantity;
+    }
+
+    // --- UTILIDADES VISUALES ---
+    function updateCartCounter() {
+        let cart = getCart();
+        const el = document.getElementById('mini-cart-count');
+        if(el) el.textContent = cart.reduce((s,i)=>s+(i.quantity||1),0);
+    }
+
+    function showToast(msg) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = "toast show bg-dark text-white mb-2 shadow";
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
   </script>
 </body>
 </html>

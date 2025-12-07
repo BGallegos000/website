@@ -91,48 +91,25 @@
 
   <footer class="footer-section text-center">
     <div class="container">
-        <p class="mb-0">&copy; 2025 Rostisería SC. Todos los derechos reservados.</p>
+        <p class="mb-0">&copy; 2025 Rostisería SC.</p>
     </div>
   </footer>
-
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api_utils.js"></script>
   <script src="TiempoSesion.js"></script>
-  
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // 1. Contador del Carrito
-        let cart = getCart();
-        document.getElementById('mini-cart-count').textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      // 1. Contador del Carrito
+      let cart = getCart();
+      const cartCounter = document.getElementById('mini-cart-count');
+      if(cartCounter) cartCounter.textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
 
-        // 2. Lógica de Navbar (Sesión / Admin)
-        const user = getLoggedUser();
-        const navAdmin = document.getElementById("navAdminItem");
-        const loginContainer = document.getElementById("navLoginContainer");
-        const mobileLogin = document.getElementById("mobileLoginLink");
-
-        if (user) {
-            if (user.isAdmin) {
-                navAdmin.classList.remove("d-none");
-            }
-            
-            // Cambiar "Ingresar" por "Salir" en PC
-            loginContainer.innerHTML = `<a class="nav-link mx-2 text-warning" href="#" id="btnLogout"><i class="bi bi-person-circle me-1"></i>Salir</a>`;
-            
-            // Cambiar en Móvil
-            if (mobileLogin) mobileLogin.textContent = "Cerrar Sesión";
-
-            // Manejar Cierre de Sesión
-            const handleLogout = (e) => {
-                e.preventDefault();
-                clearAuth();
-                window.location.reload(); // Recargar página
-            };
-
-            document.getElementById("btnLogout").addEventListener("click", handleLogout);
-            if (mobileLogin) mobileLogin.addEventListener("click", handleLogout);
-        }
+      // 2. Configuración automática del Navbar
+      configurarNavbar(); 
     });
   </script>
 </body>
 </html>
+

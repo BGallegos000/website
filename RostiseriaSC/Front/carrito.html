@@ -1,34 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8"/><title>Carrito</title>
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Carrito - Rostisería SC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="DiseñoPag.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
+
 <nav class="navbar navbar-expand navbar-custom sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="index.html"><i class="bi bi-fire text-warning me-2"></i>Rostisería SC</a>
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-fire text-warning me-2"></i>Rostisería SC
+      </a>
+
       <div class="d-flex align-items-center ms-auto">
         <div class="d-none d-md-flex align-items-center me-3">
             <a class="nav-link mx-2" href="index.html">Inicio</a>
             <a class="nav-link mx-2" href="catalogo.html">Catálogo</a>
-            <span id="navLoginContainer"><a class="nav-link mx-2" href="login.html">Ingresar</a></span>
+            <span id="navLoginContainer">
+                <a class="nav-link mx-2" href="login.html">Ingresar</a>
+            </span>
         </div>
+
         <a class="btn position-relative me-3 text-light" href="carrito.html">
-            <i class="bi bi-cart3 fs-5"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
         </a>
+
         <div class="dropdown">
-            <button class="btn btn-outline-light border-0" data-bs-toggle="dropdown"><i class="bi bi-list fs-4"></i></button>
+            <button class="btn btn-outline-light border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-list fs-4"></i>
+            </button>
             <ul class="dropdown-menu dropdown-menu-end shadow-lg">
                 <li class="d-md-none"><a class="dropdown-item" href="catalogo.html">Ir al Catálogo</a></li>
                 <li class="d-md-none"><a class="dropdown-item" href="login.html" id="mobileLoginLink">Ingresar</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="nosotros.html">Nosotros</a></li>
-                <li><a class="dropdown-item" href="contacto.html">Contacto</a></li>
-                <li id="navAdminItem" class="d-none"><hr class="dropdown-divider"><a class="dropdown-item text-warning fw-bold" href="admin.html">Panel Admin</a></li>
+                <li class="d-md-none"><hr class="dropdown-divider"></li>
+                
+                <li><a class="dropdown-item" href="nosotros.html"><i class="bi bi-people me-2"></i>Nosotros</a></li>
+                <li><a class="dropdown-item" href="contacto.html"><i class="bi bi-envelope me-2"></i>Contacto</a></li>
+                
+                <li id="navAdminItem" class="d-none">
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item text-warning fw-bold" href="admin.html">
+                        <i class="bi bi-speedometer2 me-2"></i>Panel Admin
+                    </a>
+                </li>
             </ul>
         </div>
       </div>
@@ -37,74 +56,343 @@
 
 <section class="container my-5">
     <h2 class="section-title">Tu Pedido</h2>
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0"><div class="card-body">
-                <table class="table align-middle"><thead class="table-light"><tr><th>Producto</th><th>Cant</th><th>Precio</th><th>Subtotal</th><th></th></tr></thead><tbody id="cartTable"></tbody></table>
-                <p id="msgEmpty" class="text-center text-muted my-3"></p>
-            </div></div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Producto</th>
+                                    <th class="text-center">Cant</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartTable">
+                                </tbody>
+                        </table>
+                        
+                    </div>
+                    <p id="msgEmpty" class="text-center text-muted my-5 d-none">
+                        <i class="bi bi-basket display-1 d-block mb-3 opacity-25"></i>
+                        Tu carrito está vacío. <a href="catalogo.html">Ir al catálogo</a>.
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 p-3">
-                <h4 class="mb-3">Datos de Envío</h4>
+
+        <div class="col-lg-4">
+            <div class="card shadow border-0 p-4 bg-white">
+                <h4 class="mb-4 text-dark border-bottom pb-2">Datos de Envío</h4>
                 <form id="orderForm">
-                    <input class="form-control mb-2" id="cName" placeholder="Nombre" required>
-                    <input class="form-control mb-2" id="cEmail" placeholder="Email" type="email" required>
-                    <input class="form-control mb-2" id="cPhone" placeholder="Teléfono" required>
-                    <input class="form-control mb-2" id="cAddr" placeholder="Dirección" required>
-                    <textarea class="form-control mb-3" id="cNote" placeholder="Notas"></textarea>
-                    <div class="d-flex justify-content-between mb-3 fw-bold fs-5"><span>Total:</span><span id="cTotal" class="text-primary">$0</span></div>
-                    <button class="btn btn-primary-custom w-100">Confirmar Pedido</button>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Nombre Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                            <input class="form-control" id="cName" placeholder="Tu nombre" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Correo Electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                            <input class="form-control" id="cEmail" placeholder="nombre@ejemplo.com" type="email" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Teléfono</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                            <input class="form-control" id="cPhone" placeholder="+56 9..." required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Dirección de Entrega</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
+                            <input class="form-control" id="cAddr" placeholder="Calle, Número, Comuna" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Notas Adicionales</label>
+                        <textarea class="form-control" id="cNote" rows="2" placeholder="Ej: Sin mayonesa, timbre malo..."></textarea>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fs-5 text-muted">Total a Pagar:</span>
+                        <span id="cTotal" class="fs-3 fw-bold text-primary">$0</span>
+                    </div>
+                    
+                    <button type="button" onclick="iniciarPagoWebpay()" class="btn btn-primary-custom w-100 py-3 fs-5 shadow-sm">
+                        Ir a Pagar <i class="bi bi-credit-card-2-back ms-2"></i>
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </section>
 
-<footer class="footer-section text-center"><p class="mb-0">&copy; 2025 Rostisería SC</p></footer>
+<div class="modal fade" id="modalWebpay" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Pago Seguro Webpay</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        
+        <div id="webpayLoading" class="text-center d-none py-5">
+            <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div>
+            <p class="mt-3 fw-bold text-muted animate-pulse">Procesando transacción...</p>
+            <small class="text-muted">Verificando fondos con el banco emisor...</small>
+        </div>
+
+        <form id="formWebpay">
+            <div class="text-center mb-4 p-3 bg-light rounded">
+                <h4 class="fw-bold text-danger m-0">Webpay<span class="text-dark">Plus</span></h4>
+                <p class="text-muted mt-2 mb-0 small">Comercio: Rostisería SC</p>
+                <p class="text-muted mt-0 small">Monto: <strong id="montoWebpay" class="text-dark"></strong></p>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">Número de Tarjeta</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-credit-card text-primary"></i></span>
+                    <input type="text" id="wpCardNum" class="form-control border-start-0 ps-0" 
+                           placeholder="0000 0000 0000 0000" maxlength="16" 
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+                <div class="form-text text-danger d-none fw-bold mt-2" id="errorTarjeta"></div>
+            </div>
+            
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label small fw-bold text-secondary">Vencimiento</label>
+                    <input type="text" id="wpDate" class="form-control form-control-lg text-center" 
+                           placeholder="MM/AA" maxlength="5" required>
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label small fw-bold text-secondary">CVV</label>
+                    <input type="password" id="wpCVV" class="form-control form-control-lg text-center" 
+                           placeholder="123" maxlength="3" 
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-3 fw-bold mt-2 shadow-sm">
+                <i class="bi bi-lock-fill me-2"></i>Pagar Ahora
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer-section text-center">
+    <div class="container"><p class="mb-0">&copy; 2025 Rostisería SC.</p></div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="api_utils.js"></script>
 <script src="TiempoSesion.js"></script>
+
 <script>
+    // Variables globales para el proceso de pago
+    let datosPedidoTemporal = {};
+
     document.addEventListener("DOMContentLoaded", () => {
-        let cart = getCart();
-        const update = () => { document.getElementById('mini-cart-count').textContent=cart.reduce((s,i)=>s+(i.quantity||1),0); }; update();
+        // 1. Configuración del Navbar (Centralizada)
+        configurarNavbar();
+
+        // 2. Autocompletar email si está logueado
         const user = getLoggedUser();
-        if(user) { 
-            if(user.isAdmin) document.getElementById("navAdminItem").classList.remove("d-none");
-            document.getElementById("navLoginContainer").innerHTML=`<a class="nav-link mx-2 text-warning" href="#" onclick="clearAuth();window.location.reload()">Salir</a>`;
-            if(document.getElementById("mobileLoginLink")) document.getElementById("mobileLoginLink").onclick=()=>{clearAuth();window.location.reload()};
+        if (user) {
             document.getElementById("cEmail").value = user.email;
         }
 
-        const render = () => {
-            const tb = document.getElementById("cartTable"); tb.innerHTML=""; let tot=0;
-            if(!cart.length) document.getElementById("msgEmpty").textContent="Carrito vacío";
-            cart.forEach((i,x)=>{
-                const p=i.price||i.precio||0, q=i.quantity||i.cantidad||1, sub=p*q; tot+=sub;
-                tb.innerHTML+=`<tr><td>${i.name||i.nombre}</td><td>${q}</td><td>$${p.toLocaleString("es-CL")}</td><td>$${sub.toLocaleString("es-CL")}</td><td><button class="btn btn-sm text-danger" onclick="rem(${x})"><i class="bi bi-trash"></i></button></td></tr>`;
-            });
-            document.getElementById("cTotal").textContent="$"+tot.toLocaleString("es-CL");
-        };
-        window.rem=(i)=>{cart.splice(i,1); saveCart(cart); render(); update();};
-        render();
-
-        document.getElementById("orderForm").onsubmit = async (e) => {
-            e.preventDefault();
-            if(!cart.length) return alert("Carrito vacío");
-            const total = cart.reduce((s,i)=>s+((i.price||0)*(i.quantity||1)),0);
-            const items = cart.map(i=>({productoId:i.id||i._id, nombre:i.name||i.nombre, precio:i.price||0, cantidad:i.quantity||1}));
-            try {
-                await apiFetch("/orders", "POST", {
-                    customer_name: document.getElementById("cName").value, email: document.getElementById("cEmail").value,
-                    phone: document.getElementById("cPhone").value, address: document.getElementById("cAddr").value,
-                    note: document.getElementById("cNote").value, items, total
-                });
-                alert("Pedido Enviado"); clearCart(); window.location.href="index.html";
-            } catch(er){ alert("Error: "+er.message); }
-        };
+        // 3. Renderizar Carrito
+        renderCart();
     });
+
+    // Función para renderizar la tabla
+    function renderCart() {
+        let cart = getCart();
+        const tb = document.getElementById("cartTable"); 
+        const emptyMsg = document.getElementById("msgEmpty");
+        const totalEl = document.getElementById("cTotal");
+        
+        // Actualizar contador del navbar
+        const counter = document.getElementById('mini-cart-count');
+        if(counter) counter.textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+
+        tb.innerHTML = ""; 
+        let tot = 0;
+
+        if(!cart.length) {
+            emptyMsg.classList.remove("d-none");
+            totalEl.textContent = "$0";
+            return;
+        } else {
+            emptyMsg.classList.add("d-none");
+        }
+
+        cart.forEach((i, x) => {
+            const p = i.price || i.precio || 0;
+            const q = i.quantity || i.cantidad || 1;
+            const sub = p * q; 
+            tot += sub;
+            
+            const nombreProd = i.name || i.nombre || "Producto";
+
+            tb.innerHTML += `
+            <tr>
+                <td class="ps-4 fw-semibold text-dark">${nombreProd}</td>
+                <td class="text-center">
+                    <span class="badge bg-light text-dark border px-3 py-2">${q}</span>
+                </td>
+                <td class="text-end text-muted small">$${p.toLocaleString("es-CL")}</td>
+                <td class="text-end fw-bold">$${sub.toLocaleString("es-CL")}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-link text-danger p-0" onclick="removeItem(${x})">
+                        <i class="bi bi-trash fs-5"></i>
+                    </button>
+                </td>
+            </tr>`;
+        });
+        
+        totalEl.textContent = "$" + tot.toLocaleString("es-CL");
+        const modalMonto = document.getElementById("montoWebpay");
+        if(modalMonto) modalMonto.textContent = totalEl.textContent;
+    }
+
+    window.removeItem = (index) => {
+        let cart = getCart();
+        cart.splice(index, 1);
+        saveCart(cart);
+        renderCart();
+    };
+
+    // --- LÓGICA DE PAGO WEBPAY ---
+
+    window.iniciarPagoWebpay = () => {
+        // 1. Validar formulario de envío
+        const formEnvio = document.getElementById("orderForm");
+        if (!formEnvio.checkValidity()) {
+            formEnvio.reportValidity();
+            return;
+        }
+
+        // 2. Validar carrito vacío
+        let cart = getCart();
+        if (cart.length === 0) {
+            alert("Tu carrito está vacío.");
+            return;
+        }
+
+        // 3. Guardar datos
+        datosPedidoTemporal = {
+            customer_name: document.getElementById("cName").value,
+            user_email: document.getElementById("cEmail").value,
+            phone: document.getElementById("cPhone").value,
+            address: document.getElementById("cAddr").value,
+            note: document.getElementById("cNote").value
+        };
+
+        // 4. Preparar Modal (Limpiar errores y estado)
+        const errorMsg = document.getElementById("errorTarjeta");
+        const tarjetaInput = document.getElementById("wpCardNum");
+        
+        errorMsg.classList.add("d-none");
+        tarjetaInput.classList.remove("is-invalid");
+        
+        document.getElementById("formWebpay").classList.remove("d-none");
+        document.getElementById("webpayLoading").classList.add("d-none");
+        document.getElementById("formWebpay").reset();
+        
+        document.getElementById("montoWebpay").textContent = document.getElementById("cTotal").textContent;
+
+        const modalWebpay = new bootstrap.Modal(document.getElementById('modalWebpay'));
+        modalWebpay.show();
+    };
+
+    // Procesar Pago
+    document.getElementById("formWebpay").addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        // --- INICIO SIMULACIÓN ---
+        // 1. Ocultar formulario y mostrar spinner para simular proceso
+        document.getElementById("formWebpay").classList.add("d-none");
+        document.getElementById("webpayLoading").classList.remove("d-none");
+
+        // 2. Esperar 2 segundos (Simulando comunicación con banco)
+        setTimeout(async () => {
+            
+            // 3. VALIDACIÓN POSTERIOR (Simula que el banco responde)
+            const tarjetaInput = document.getElementById("wpCardNum");
+            const errorMsg = document.getElementById("errorTarjeta");
+            const numeroLimpio = tarjetaInput.value; 
+
+            // Regla del Banco: Debe tener 16 dígitos exactos
+            if (numeroLimpio.length !== 16) {
+                // FALLO: Volver a mostrar formulario con error
+                document.getElementById("webpayLoading").classList.add("d-none");
+                document.getElementById("formWebpay").classList.remove("d-none");
+                
+                tarjetaInput.classList.add("is-invalid");
+                errorMsg.classList.remove("d-none");
+                errorMsg.innerHTML = `<i class="bi bi-x-circle-fill me-1"></i> <strong>Pago Rechazado:</strong> Tarjeta inválida (Faltan dígitos).`;
+                
+                // Alerta nativa opcional
+                alert(" Transacción Rechazada por el banco emisor.");
+                return; 
+            }
+
+            // ÉXITO: Si tiene 16 dígitos, procedemos
+            await enviarPedidoAlBackend();
+
+        }, 2000); // 2000ms = 2 segundos de espera
+    });
+
+    async function enviarPedidoAlBackend() {
+        let cart = getCart();
+        const total = cart.reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+        
+        const items = cart.map(i => ({
+            productoId: i.id || i._id,
+            nombre: i.name || i.nombre,
+            precio: i.price || 0,
+            cantidad: i.quantity || 1
+        }));
+
+        try {
+            await apiFetch("/orders", "POST", {
+                ...datosPedidoTemporal,
+                items,
+                total
+            });
+
+            // Cerrar modal
+            const modalEl = document.getElementById('modalWebpay');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+
+            alert(" ¡Pago Aprobado! Tu pedido ha sido procesado exitosamente.");
+            clearCart();
+            window.location.href = "mis_pedidos.html"; 
+
+        } catch (err) {
+            console.error(err);
+            alert("Error al registrar el pedido en el sistema: " + err.message);
+            // Restaurar modal por si quiere reintentar
+            document.getElementById("formWebpay").classList.remove("d-none");
+            document.getElementById("webpayLoading").classList.add("d-none");
+        }
+    }
 </script>
 </body>
 </html>

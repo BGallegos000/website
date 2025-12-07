@@ -27,8 +27,10 @@
 
   <section class="container py-4">
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="section-title m-0">Dashboard de Gestión</h2>
+    <div class="d-flex gap-2">
+        <button onclick="abrirModalProducto()" class="btn btn-primary-custom text-white fw-bold">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
+        </button>
         <button onclick="exportarExcel()" class="btn btn-success text-white fw-bold">
             <i class="bi bi-file-earmark-excel me-2"></i>Exportar Reporte
         </button>
@@ -121,6 +123,52 @@
   <footer class="footer-section text-center">
     <div class="container"><p class="mb-0">&copy; 2025 Rostisería SC</p></div>
   </footer>
+
+    <div class="modal fade" id="modalNuevoProducto" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title fw-bold">Agregar Nuevo Plato</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formNuevoProducto">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Producto</label>
+                            <input type="text" class="form-control" id="prodNombre" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Precio</label>
+                                <input type="number" class="form-control" id="prodPrecio" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Categoría</label>
+                                <select class="form-select" id="prodCategoria" required>
+                                    <option value="Pollo">Pollo</option>
+                                    <option value="Carne">Carne</option>
+                                    <option value="Masas">Masas</option>
+                                    <option value="Platos">Platos</option>
+                                    <option value="Acompañamientos">Acompañamientos</option>
+                                    <option value="Bebidas">Bebidas</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">URL de Imagen</label>
+                            <input type="text" class="form-control" id="prodImg" placeholder="ej: imagenes/nuevo.jpg" required>
+                            <div class="form-text">Pega una URL o usa una ruta local.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="prodDesc" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100">Guardar Producto</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api_utils.js"></script>
@@ -308,6 +356,34 @@
         link.click();
         document.body.removeChild(link);
     }
+
+        // Función para abrir el modal
+    function abrirModalProducto() {
+        new bootstrap.Modal(document.getElementById('modalNuevoProducto')).show();
+    }
+
+    // Manejar el envío del formulario
+    document.getElementById("formNuevoProducto").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const nuevoProducto = {
+            name: document.getElementById("prodNombre").value,
+            price: parseFloat(document.getElementById("prodPrecio").value),
+            category: document.getElementById("prodCategoria").value,
+            description: document.getElementById("prodDesc").value,
+            img: document.getElementById("prodImg").value,
+            stock: 100, // Stock por defecto
+            active: true
+        };
+
+        try {
+            await apiFetch("/products", "POST", nuevoProducto);
+            alert("¡Producto agregado exitosamente al catálogo!");
+            location.reload(); // Recargar para ver si quisieras listarlos (o simplemente limpiar)
+        } catch (err) {
+            alert("Error al crear producto: " + err.message);
+        }
+    });
   </script>
 </body>
 </html>

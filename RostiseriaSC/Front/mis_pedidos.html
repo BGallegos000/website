@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mis Pedidos - Rostisería SC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="DiseñoPag.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+  
+  <nav class="navbar navbar-expand navbar-custom sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-fire text-warning me-2"></i>Rostisería SC
+      </a>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="d-none d-md-flex align-items-center me-3">
+            <a class="nav-link mx-2" href="index.html">Inicio</a>
+            <a class="nav-link mx-2" href="catalogo.html">Catálogo</a>
+            <span id="navLoginContainer">
+                <a class="nav-link mx-2" href="login.html">Ingresar</a>
+            </span>
+        </div>
+
+        <a class="btn position-relative me-3 text-light" href="carrito.html">
+            <i class="bi bi-cart3 fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="mini-cart-count">0</span>
+        </a>
+
+        <div class="dropdown">
+            <button class="btn btn-outline-light border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg" id="mainDropdownMenu">
+                <li class="d-md-none"><a class="dropdown-item" href="catalogo.html">Ir al Catálogo</a></li>
+                <li class="d-md-none"><a class="dropdown-item" href="login.html" id="mobileLoginLink">Iniciar Sesión</a></li>
+                <li class="d-md-none"><hr class="dropdown-divider"></li>
+                
+                <li><a class="dropdown-item active" href="mis_pedidos.html"><i class="bi bi-receipt me-2"></i>Mis Pedidos</a></li>
+                <li><a class="dropdown-item" href="nosotros.html"><i class="bi bi-people me-2"></i>Nosotros</a></li>
+                <li><a class="dropdown-item" href="contacto.html"><i class="bi bi-envelope me-2"></i>Contacto</a></li>
+                
+                <li id="navAdminItem" class="d-none">
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item text-warning fw-bold" href="admin.html">
+                        <i class="bi bi-speedometer2 me-2"></i>Panel Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="container py-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title m-0">Historial de Pedidos</h2>
+        <a href="catalogo.html" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-plus-circle me-1"></i>Nuevo Pedido
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4">ID Pedido</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Detalle</th>
+                            <th class="text-end pe-4">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaPedidos">
+                        <tr>
+                            <td colspan="5" class="text-center p-5 text-muted">
+                                <div class="spinner-border text-warning mb-2" role="status"></div>
+                                <p>Cargando tus pedidos...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <footer class="footer-section text-center">
+    <div class="container"><p class="mb-0">&copy; 2025 Rostisería SC.</p></div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="api_utils.js"></script>
+  <script src="TiempoSesion.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // 1. Manejo del Carrito (Contador)
+        let cart = getCart();
+        document.getElementById('mini-cart-count').textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+
+        // 2. Seguridad: Verificar si está logueado
+        const user = getLoggedUser();
+        if (!user) {
+            alert("Debes iniciar sesión para ver tu historial.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        // 3. Lógica Navbar (Admin / Logout)
+        const navAdmin = document.getElementById("navAdminItem");
+        const loginContainer = document.getElementById("navLoginContainer");
+        const mobileLogin = document.getElementById("mobileLoginLink");
+
+        if (user) {
+            if (user.isAdmin) navAdmin.classList.remove("d-none");
+            
+            // Botón Salir
+            const logoutHtml = `<a class="nav-link mx-2 text-warning" href="#" id="btnLogout"><i class="bi bi-person-circle me-1"></i>Salir</a>`;
+            loginContainer.innerHTML = logoutHtml;
+            if (mobileLogin) mobileLogin.textContent = "Cerrar Sesión";
+
+            const handleLogout = (e) => {
+                e.preventDefault();
+                clearAuth();
+                window.location.href = "index.html";
+            };
+            document.getElementById("btnLogout").addEventListener("click", handleLogout);
+            if (mobileLogin) mobileLogin.addEventListener("click", handleLogout);
+        }
+
+        // 4. Cargar Pedidos del Cliente
+        const tbody = document.getElementById("listaPedidos");
+        
+        try {
+            // Petición a la API filtrando por email
+            const pedidos = await apiFetch(`/orders?email=${user.email}`, "GET", null, false);
+            
+            tbody.innerHTML = "";
+
+            if (!pedidos || pedidos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center p-5">
+                            <i class="bi bi-basket display-4 text-muted"></i>
+                            <p class="mt-3 text-muted">Aún no has realizado ningún pedido.</p>
+                            <a href="catalogo.html" class="btn btn-outline-custom mt-2">Ir al Catálogo</a>
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            // Renderizar filas
+            pedidos.forEach(p => {
+                const fechaObj = new Date(p.created_at);
+                const fecha = fechaObj.toLocaleDateString("es-CL") + " " + fechaObj.toLocaleTimeString("es-CL", {hour: '2-digit', minute:'2-digit'});
+                
+                const resumenItems = (p.items || []).map(i => {
+                    // Busca 'quantity' O 'cantidad', si no hay ninguno asume 1
+                    const cant = i.quantity || i.cantidad || 1;
+                    const nombre = i.name || i.nombre || "Producto";
+                    return `<span class="badge bg-light text-dark border me-1">${cant}x ${nombre}</span>`;
+                }).join("");
+
+                // Estilo según estado
+                let estadoClass = "bg-secondary";
+                let icon = "bi-hourglass";
+                
+                if(p.status === "Pendiente") { estadoClass = "bg-warning text-dark"; icon = "bi-clock"; }
+                else if(p.status === "En preparación") { estadoClass = "bg-info text-dark"; icon = "bi-fire"; }
+                else if(p.status === "En camino") { estadoClass = "bg-primary"; icon = "bi-scooter"; }
+                else if(p.status === "Entregado") { estadoClass = "bg-success"; icon = "bi-check-circle-fill"; }
+                else if(p.status === "Anulado") { estadoClass = "bg-danger"; icon = "bi-x-circle"; }
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td class="ps-4"><span class="font-monospace text-muted small">#${p._id.slice(-6)}</span></td>
+                    <td>${fecha}</td>
+                    <td>
+                        <span class="badge ${estadoClass} py-2 px-3 rounded-pill">
+                            <i class="bi ${icon} me-1"></i>${p.status}
+                        </span>
+                    </td>
+                    <td>${resumenItems}</td>
+                    <td class="text-end pe-4 fw-bold text-success">$${(p.total || 0).toLocaleString("es-CL")}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        } catch (err) {
+            console.error(err);
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger p-4">Error al cargar pedidos. Intenta nuevamente.</td></tr>`;
+        }
+    });
+  </script>
+</body>
+</html>

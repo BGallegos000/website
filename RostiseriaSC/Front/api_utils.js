@@ -32,3 +32,44 @@ function addToCart(p) {
     else c.push({...p, quantity: p.quantity||1});
     saveCart(c);
 }
+
+// --- FUNCIÓN CENTRALIZADA DEL NAVBAR  ---
+function configurarNavbar() {
+    const user = getLoggedUser();
+    if (!user) return; // Si no hay usuario, no hacemos nada
+
+    // 1. Mostrar Admin si corresponde
+    const navAdmin = document.getElementById("navAdminItem");
+    if (user.isAdmin && navAdmin) {
+        navAdmin.classList.remove("d-none");
+    }
+
+    // 2. "Mis Pedidos" 
+    const dropdownMenu = document.querySelector(".dropdown-menu");
+    // Verificamos que exista el menú y que no hayamos agregado el botón antes
+    if (dropdownMenu && !dropdownMenu.innerHTML.includes("mis_pedidos.html")) {
+        const li = document.createElement("li");
+        li.innerHTML = `<a class="dropdown-item fw-bold text-primary" href="mis_pedidos.html"><i class="bi bi-receipt me-2"></i>Mis Pedidos</a>`;
+        
+        // Insertar al principio del menú
+        dropdownMenu.prepend(li); 
+    }
+
+    // 3. Cambiar Login por Logout
+    const loginContainer = document.getElementById("navLoginContainer");
+    const mobileLogin = document.getElementById("mobileLoginLink");
+    const logoutAction = (e) => {
+        e.preventDefault();
+        clearAuth();
+        window.location.href = "index.html";
+    };
+
+    if (loginContainer) {
+        loginContainer.innerHTML = `<a class="nav-link mx-2 text-warning" href="#" id="btnLogoutGlobal"><i class="bi bi-person-circle me-1"></i>Salir</a>`;
+        document.getElementById("btnLogoutGlobal").addEventListener("click", logoutAction);
+    }
+    if (mobileLogin) {
+        mobileLogin.textContent = "Cerrar Sesión";
+        mobileLogin.addEventListener("click", logoutAction);
+    }
+}

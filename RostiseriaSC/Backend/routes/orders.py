@@ -1,60 +1,84 @@
-from fastapi import APIRouter, HTTPException, Query, Body
+from fastapi import APIRouter, HTTPException, status, Query
 from typing import List, Optional
-from bson import ObjectId
-from models import Order, OrderItem, OrderStatus
 from database import get_collection
-from pydantic import BaseModel
+from models import Order, OrderStatus
+from bson import ObjectId
+from datetime import datetime
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
-class OrderCreate(BaseModel):
-    customer_name: str
-    email: str
-    phone: str
-    address: str
-    note: Optional[str] = ""
-    items: List[OrderItem] 
-    total: float
-
-class OrderStatusUpdate(BaseModel):
-    status: str
-
-@router.post("/", response_model=Order, status_code=201)
-async def create_order(order_in: OrderCreate):
-    if not order_in.items:
-        raise HTTPException(400, "Carrito vacío")
-    
-    new_order = Order(
-        user_email=order_in.email,
-        customer_name=order_in.customer_name,
-        phone=order_in.phone,
-        address=order_in.address,
-        note=order_in.note,
-        items=order_in.items,
-        total=order_in.total
-    )
+# --- 1. CREAR PEDIDO (POST) ---
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=Order)
+async def create_order(order: Order):
     coll = get_collection("orders")
-    res = await coll.insert_one(new_order.model_dump(by_alias=True, exclude={"id"}))
-    created = await coll.find_one({"_id": res.inserted_id})
-    return Order(**created)
+    
+    # Asignar valores por defecto del servidor
+    order.status = OrderStatus.PENDING
+    order.created_at = datetime.now()
+    
+    # Convertir a formato diccionario para MongoDB
+    order_dict = order.model_dump(by_alias=True, exclude={"id"})
+    
+    try:
+        # Insertar en la base de datos
+        result = await coll.insert_one(order_dict)
+        
+        # Recuperar el documento recién creado
+        created_order = await coll.find_one({"_id": result.inserted_id})
+        return created_order
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno al procesar el pedido")
 
+
+# --- 2. OBTENER PEDIDOS (GET) ---
 @router.get("/", response_model=List[Order])
 async def get_orders(email: Optional[str] = Query(None)):
-    query = {}
-    if email: query["user_email"] = email
     coll = get_collection("orders")
-    return await coll.find(query).sort("created_at", -1).to_list(100)
+    filtro = {}
+    
+    # Si se envía email, filtrar por usuario. Si no, devuelve todo (útil para admin si lo necesita)
+    if email:
+        filtro["user_email"] = email
 
-@router.patch("/{order_id}/status", response_model=Order)
-async def update_status(order_id: str, status_update: OrderStatusUpdate):
-    if not ObjectId.is_valid(order_id): raise HTTPException(400, "ID inválido")
+    try:
+        # Ordenar por fecha descendente (más reciente primero)
+        cursor = coll.find(filtro).sort("created_at", -1)
+        orders = await cursor.to_list(length=100)
+        return orders
+    except Exception as e:
+         raise HTTPException(status_code=500, detail="Error al recuperar el historial")
+
+
+# --- 3. ACTUALIZAR ESTADO (PATCH) ---
+@router.patch("/{id}/status", response_model=Order)
+async def update_order_status(id: str, status_update: dict):
+    new_status = status_update.get("status")
     
+    if not new_status:
+        raise HTTPException(status_code=400, detail="El campo 'status' es obligatorio")
+
     coll = get_collection("orders")
-    res = await coll.update_one(
-        {"_id": ObjectId(order_id)}, 
-        {"$set": {"status": status_update.status}}
-    )
-    if res.matched_count == 0: raise HTTPException(404, "No encontrado")
-    
-    doc = await coll.find_one({"_id": ObjectId(order_id)})
-    return Order(**doc)
+
+    try:
+        # Validar formato de ID de MongoDB
+        if not ObjectId.is_valid(id):
+            raise HTTPException(status_code=400, detail="ID de pedido inválido")
+            
+        mongo_id = ObjectId(id) 
+
+        # Ejecutar actualización
+        result = await coll.update_one(
+            {"_id": mongo_id}, 
+            {"$set": {"status": new_status}}
+        )
+
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Pedido no encontrado")
+
+        # Devolver el documento actualizado
+        updated_order = await coll.find_one({"_id": mongo_id})
+        return updated_order
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -104,7 +104,7 @@
 
   <footer class="footer-section text-center">
     <div class="container">
-        <p class="mb-0">&copy; 2025 Rostisería SC. Todos los derechos reservados.</p>
+        <p class="mb-0">&copy; 2025 Rostisería SC.</p>
     </div>
   </footer>
 
@@ -116,63 +116,46 @@
     document.addEventListener("DOMContentLoaded", () => {
         // 1. Contador del Carrito
         let cart = getCart();
-        document.getElementById('mini-cart-count').textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+        const cartCounter = document.getElementById('mini-cart-count');
+        if(cartCounter) cartCounter.textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
 
-        // 2. Lógica de Navbar
+        // 2. Configuración automática del Navbar
+        configurarNavbar(); 
+
+        // 3. Autocompletar email si hay usuario
         const user = getLoggedUser();
         if (user) {
-            if (user.isAdmin) document.getElementById("navAdminItem").classList.remove("d-none");
-            document.getElementById("navLoginContainer").innerHTML = `<a class="nav-link mx-2 text-warning" href="#" onclick="clearAuth();window.location.reload()">Salir</a>`;
-            const mob = document.getElementById("mobileLoginLink");
-            if (mob) { mob.textContent = "Cerrar Sesión"; mob.onclick = () => { clearAuth(); window.location.reload(); }; }
-            
-            // Autocompletar email si está logueado
-            document.getElementById("contactEmail").value = user.email;
+            const emailInput = document.getElementById("contactEmail");
+            if(emailInput) emailInput.value = user.email;
         }
 
-        // 3. Manejo del Formulario de Contacto (CONECTADO AL BACKEND)
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById("contactName").value.trim();
-            const email = document.getElementById("contactEmail").value.trim();
-            const msg = document.getElementById("contactMsg").value.trim();
+        // 4. Manejo del Formulario de Contacto
+        const formContact = document.getElementById('contactForm');
+        if (formContact) {
+            formContact.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById("contactName").value.trim();
+                const email = document.getElementById("contactEmail").value.trim();
+                const msg = document.getElementById("contactMsg").value.trim();
 
-            if(!name || !email || !msg) {
-                alert("Por favor completa todos los campos.");
-                return;
-            }
+                if(!name || !email || !msg) return alert("Completa todos los campos.");
 
-            try {
-                // Petición POST a la API
-                await apiFetch("/contact", "POST", {
-                    name: name,
-                    email: email,
-                    message: msg
-                });
-
-                // Mostrar Toast de Éxito
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = "toast align-items-center text-white bg-success border-0 show";
-                toast.innerHTML = `
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <i class="bi bi-check-circle me-2"></i>Mensaje enviado y guardado correctamente.
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                `;
-                container.appendChild(toast);
-                setTimeout(() => toast.remove(), 4000);
-                
-                e.target.reset(); // Limpiar formulario
-
-            } catch (err) {
-                console.error(err);
-                alert("Error al enviar el mensaje: " + err.message);
-            }
-        });
+                try {
+                    await apiFetch("/contact", "POST", { name, email, message: msg });
+                    
+                    // Toast de éxito
+                    const container = document.getElementById('toast-container');
+                    const toast = document.createElement('div');
+                    toast.className = "toast show align-items-center text-white bg-success border-0";
+                    toast.innerHTML = `<div class="d-flex"><div class="toast-body">Mensaje enviado.</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+                    container.appendChild(toast);
+                    setTimeout(() => toast.remove(), 4000);
+                    e.target.reset();
+                } catch (err) {
+                    alert("Error: " + err.message);
+                }
+            });
+        }
     });
   </script>
 </body>

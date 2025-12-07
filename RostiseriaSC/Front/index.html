@@ -68,6 +68,20 @@
                         <h5>Pastel de Choclo</h5>
                     </div>
                   </div>
+                  <div class="carousel-item">
+                    <img src="imagenes/empanadas.jpg" class="d-block w-100" alt="Pastel" style="height: 400px; object-fit: cover;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded-3 p-2">
+                        <h5>Empanadas Fritas y al Horno</h5>
+                    </div>
+                  </div>
+              
+                  <div class="carousel-item">
+                    <img src="imagenes/milanesa.jpg" class="d-block w-100" alt="Pastel" style="height: 400px; object-fit: cover;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded-3 p-2">
+                        <h5>Al disco</h5>
+                    </div>
+                  </div>
+  
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
                 <button class="carousel-control-next" type="button" data-bs-target="#specialtiesCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
@@ -90,13 +104,10 @@
         document.getElementById('mini-cart-count').textContent = cart.reduce((s, i) => s + (i.quantity || 1), 0);
         
         const user = getLoggedUser();
-        if (user) {
-            if (user.isAdmin) document.getElementById("navAdminItem").classList.remove("d-none");
-            document.getElementById("navLoginContainer").innerHTML = `<a class="nav-link mx-2 text-warning" href="#" onclick="clearAuth();window.location.reload()">Salir</a>`;
-            const mob = document.getElementById("mobileLoginLink");
-            if(mob) { mob.textContent = "Cerrar Sesión"; mob.onclick = () => { clearAuth(); window.location.reload(); }; }
-        }
+
+        configurarNavbar();
     });
+
   </script>
 </body>
 </html>
