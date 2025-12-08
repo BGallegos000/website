@@ -185,6 +185,7 @@
     }
 
     // --- LÓGICA DE RENDERIZADO Y PAGINACIÓN ---
+    // Renderizar el catálogo según filtros y página actual Manipulacion de el DOM
     function renderCatalog() {
         const container = document.getElementById('productList');
         const noResults = document.getElementById('noResults');
@@ -211,7 +212,7 @@
         // Obtener SOLO los productos de esta página
         const productsToShow = filteredProducts.slice(startIndex, endIndex);
 
-        // 3. Dibujar Tarjetas
+        // 3. Dibujar Tarjetas, sistema de grillas bootstrap
         productsToShow.forEach(p => {
             container.innerHTML += `
                 <div class="col-md-4 col-sm-6 fade-in">
